@@ -13,6 +13,8 @@
 // @require      https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/highlight.min.js
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
+// @downloadURL  https://github.com/Oricul/kbin-scripts/raw/main/kbin-code-highlighting.user.js
+// @updateURL    https://github.com/Oricul/kbin-scripts/raw/main/kbin-code-highlighting.user.js
 // ==/UserScript==
 
 (function() {
