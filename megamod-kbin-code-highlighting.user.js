@@ -15,6 +15,8 @@
 // @updateURL    https://github.com/Oricul/kbin-scripts/raw/main/megamod-kbin-code-highlighting.user.js
 // ==/UserScript==
 
+GM_addStyle(GM_getResourceText("css"));
+
 function addTags(item) {
     const orig_html = item.innerHTML;
     let new_html = "<pre>" + orig_html + "</pre>";
@@ -28,7 +30,6 @@ function getCodeTags(selector) {
 }
 function initCodeHighlights(toggle){
     if (toggle === true) {
-        GM_addStyle(GM_getResourceText("css"));
         getCodeTags("code");
         hljs.initHighlighting();
     }
