@@ -13,24 +13,21 @@
 // @grant        GM_getResourceText
 // ==/UserScript==
 
-(function() {
-    'use strict';
-    function addTags(item) {
-        const orig_html = item.innerHTML;
-        let new_html = "<pre>" + orig_html + "</pre>";
-        item.innerHTML = new_html;
+function addTags(item) {
+    const orig_html = item.innerHTML;
+    let new_html = "<pre>" + orig_html + "</pre>";
+    item.innerHTML = new_html;
+}
+function getCodeTags(selector) {
+    const items = document.querySelectorAll(selector);
+    items.forEach((item) => {
+        addTags(item);
+    });
+}
+function initCodeHighlights(toggle){
+    if (toggle === true) {
+        GM_addStyle(GM_getResourceText("css"));
+        getCodeTags("code");
+        hljs.initHighlighting();
     }
-    function getCodeTags(selector) {
-        const items = document.querySelectorAll(selector);
-        items.forEach((item) => {
-            addTags(item);
-        });
-    }
-    function initCodeHighlights(toggle){
-        if (toggle === true) {
-            GM_addStyle(GM_getResourceText("css"));
-            getCodeTags("code");
-            hljs.initHighlighting();
-        }
-    }
-})();
+}
