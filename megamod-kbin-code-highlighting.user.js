@@ -9,9 +9,10 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=kbin.social
 // @resource     css   https://github.com/highlightjs/highlight.js/raw/main/src/styles/base16/windows-10.css
 // @require      https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js
-// @require      http://code.jquery.com/jquery-3.4.1.min.js
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
+// @downloadURL  https://github.com/Oricul/kbin-scripts/raw/main/megamod-kbin-code-highlighting.user.js
+// @updateURL    https://github.com/Oricul/kbin-scripts/raw/main/megamod-kbin-code-highlighting.user.js
 // ==/UserScript==
 
 function addTags(item) {
