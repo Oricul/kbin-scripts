@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         kbin-code-highlighting
+// @name         kbin-code-highlighting-dev
 // @namespace    https://github.com/Oricul
 // @version      0.3.1
 // @description  Use HLJS to add code highlighting to kbin. Hopefully adds some legibility as well.
@@ -62,8 +62,7 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
-// @downloadURL  https://github.com/Oricul/kbin-scripts/raw/main/kbin-code-highlighting.user.js
-// @updateURL    https://github.com/Oricul/kbin-scripts/raw/main/kbin-code-highlighting.user.js
+// @grant        GM_setClipboard
 // ==/UserScript==
 
 (function() {
@@ -92,9 +91,26 @@
         })});
     }
     function addTags(item) {
-        const orig_html = item.innerHTML;
-        let new_html = "<pre>" + orig_html + "</pre>";
-        item.innerHTML = new_html;
+        const orig_code = item.innerHTML;
+        const lang = item.className.split(' ')[0].split('-')[1];
+        const parent_html = item.parentElement.innerHTML;
+        const header = document.createElement('div');
+        header.setAttribute('class', 'hljs');
+        header.setAttribute('style', 'padding-top: 10px; padding-bottom: 10px; border-bottom-style: dashed;');
+        const span = document.createElement('span');
+        span.setAttribute('class', 'hljs-keyword');
+        span.setAttribute('style', 'margin-left: 20px;');
+        span.innerHTML = lang;
+        /*const icon = document.createElement('i');
+        icon.setAttribute('class', 'fa fa-paste hljs-title');
+        icon.setAttribute('aria-hidden', 'true');
+        icon.setAttribute('style', 'margin-left: 10px;');
+        icon.setAttribute('onclick', 'copyCode("' + orig_code +'")');*/
+        header.appendChild(span);
+        //header.appendChild(icon);
+        item.parentElement.prepend(header);
+        //let new_html = `<div class='hljs' style='padding-top:10px;'><span class='hljs-keyword' style='margin-left: 20px;'>${lang}</span><i class='fa fa-paste' aria-hidden='true' style='margin-left: 10px;' onclick="function(){GM_setClipboard(orig_code);};"></i></div>` + parent_html;
+        //item.parentElement.innerHTML = new_html;
     }
     function getCodeTags(selector) {
         const items = document.querySelectorAll(selector);
@@ -118,6 +134,11 @@
         }
     });
     injectHtmlSettings(settingPrefix + 'css', 'Stylesheet URL', css);
+    const script = document.createElement('script');
+    script.innerHTML = `function copyCode(text) {
+        navigator.clipboard.writeText(text);
+    }`;
+    document.querySelector('head').appendChild(script);
     getCodeTags("code");
     hljs.configure({
         ignoreUnescapedHTML: true
