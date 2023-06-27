@@ -349,11 +349,22 @@
         header.appendChild(hide_icon);
         item.parentElement.prepend(header);
     }
+    function addPreTag(parent, placement, code) {
+        // For some reason, sometimes code isn't wrapped in pre. Let's fix that.
+        const pre = document.createElement('pre');
+        parent.replaceChild(pre, code);
+        pre.appendChild(code);
+    }
     function getCodeTags(selector) {
         // Gets all the code sections and starts adding top bars.
         const items = document.querySelectorAll(selector);
         items.forEach((item) => {
             window.addEventListener("load", function () {
+                const parent = item.parentElement
+                if (parent.nodeName !== 'PRE') {
+                    const placement = item.nextSibling;
+                    addPreTag(parent, placement, item);
+                }
                 addTags(item);
             });
         });
