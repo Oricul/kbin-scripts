@@ -63,6 +63,8 @@
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setClipboard
+// @downloadURL  https://github.com/Oricul/kbin-scripts/raw/main/kbin-code-highlighting.user.js
+// @updateURL    https://github.com/Oricul/kbin-scripts/raw/main/kbin-code-highlighting.user.js
 // ==/UserScript==
 
 (function() {
