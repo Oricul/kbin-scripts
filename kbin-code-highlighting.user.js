@@ -354,6 +354,7 @@
         const pre = document.createElement('pre');
         parent.replaceChild(pre, code);
         pre.appendChild(code);
+        hljs.highlightElement(code);
     }
     function getCodeTags(selector) {
         // Gets all the code sections and starts adding top bars.
