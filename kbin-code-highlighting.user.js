@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         kbin-code-highlighting
 // @namespace    https://github.com/Oricul
-// @version      0.4
+// @version      0.4.1
 // @description  Use HLJS to add code highlighting to kbin. Hopefully adds some legibility as well.
 // @author       0rito
 // @license      MIT
@@ -56,6 +56,7 @@
 // @match        https://
 // @icon         https://kbin.social/favicon.svg
 // @require      https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js
+// @require      https://github.com/Oricul/kbin-scripts/raw/main/kbin-mod-options.js
 // @connect      github.com
 // @connect      raw.githubusercontent.com
 // @grant        GM_addStyle
@@ -63,6 +64,7 @@
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setClipboard
+// @grant        GM_info
 // @downloadURL  https://github.com/Oricul/kbin-scripts/raw/main/kbin-code-highlighting.user.js
 // @updateURL    https://github.com/Oricul/kbin-scripts/raw/main/kbin-code-highlighting.user.js
 // ==/UserScript==
@@ -253,48 +255,19 @@
             display: none !important;
         }
     `);
-    // Declare all functions
-    function generateSettingsList(name, url) {
-        // Generates a standard 'option' for dropdown list and selects the current style.
-        const option = document.createElement('option');
-        option.value = url;
-        option.label = name;
-        option.innerHTML = name;
-        if (name === css) {
-            option.selected = true;
+    function startup(firstBoot = false) {
+        setCss(cssUrl);
+        if (firstBoot) {
+            getCodeTags('code');
+        } else {
+            addHeaders('code');
         }
-        return option
     }
-    function injectHtmlSettings(setting, settingFriendlyName) {
-        // Adds this script's settings to kbin's setting list.
-        const settingsList = document.querySelector(".settings-list");
-        const header = document.createElement('strong');
-        header.textContent = "kbin-code-highlighting";
-        settingsList.appendChild(header);
-        const div = document.createElement('div');
-        div.className = 'row';
-        const span = document.createElement('span');
-        span.innerHTML = settingFriendlyName + ":";
-        div.appendChild(span);
-        const dropdown = document.createElement('select');
-        dropdown.name = 'hljs-css';
-        dropdown.style = 'border: none; padding: 0px 10px; border-radius: 5px;';
-        dropdown.className = 'hljs-css-selector';
-        styles.forEach(style => {
-            const option = generateSettingsList(style.name, style.url);
-            dropdown.appendChild(option);
+    function shutdown() {
+        injectedCss.remove();
+        document.querySelectorAll('.kch_header').forEach(header => {
+            header.remove();
         });
-        div.appendChild(dropdown);
-        settingsList.appendChild(div);
-        document.querySelectorAll(".hljs-css-selector").forEach(drop => { drop.addEventListener("change", () => {
-            injectedCss.remove();
-            setCss(drop.value);
-            document.querySelectorAll('option').forEach(dropper => {
-                if (dropper.value === drop.value) {
-                    GM_setValue(setting, dropper.label);
-                }
-            });
-        })});
     }
     function addTags(item) {
         // Creates the top bar for code section displaying name, copy button - and maybe collapse later.
@@ -308,13 +281,12 @@
         }
         const parent_html = item.parentElement.innerHTML;
         const header = document.createElement('div');
-        header.setAttribute('class', 'hljs');
+        header.className = 'hljs kch_header';
         header.setAttribute('style', 'padding-top: 10px; padding-bottom: 10px; border-bottom-style: dashed;');
         const span = document.createElement('span');
         span.setAttribute('class', 'hljs-keyword');
         span.setAttribute('style', 'margin-left: 20px;');
         span.innerHTML = lang;
-        // <i class="fa-solid fa-copy" style="color: #ffffff;"></i>
         const icon = document.createElement('i');
         icon.className = 'fa-solid fa-copy hljs-section';
         icon.setAttribute('aria-hidden', 'true');
@@ -360,16 +332,8 @@
     }
     function getCodeTags(selector) {
         // Gets all the code sections and starts adding top bars.
-        const items = document.querySelectorAll(selector);
-        items.forEach((item) => {
-            window.addEventListener("load", function () {
-                const parent = item.parentElement
-                if (parent.nodeName !== 'PRE') {
-                    const placement = item.nextSibling;
-                    addPreTag(parent, placement, item);
-                }
-                addTags(item);
-            });
+        window.addEventListener("load", function () {
+            addHeaders(selector);
         });
     }
     function setCss(url) {
@@ -385,9 +349,49 @@
             }
         });
     }
+    function addHeaders(selector) {
+        document.querySelectorAll('code').forEach(item => {
+            const parent = item.parentElement;
+            if (parent.nodeName !== 'PRE') {
+                const placement = item.nextSibling;
+                addPreTag(parent, placement, item);
+            }
+            addTags(item);
+        });
+    }
+    function createSettings() {
+        let license = (GM_info).script.header.split('\n').find(header => header.includes('license'));
+        license = license.replace('//','').replace('@license','').trim();
+        kmoAddHeader('kbin-code-highlighting', { author: (GM_info).script.author, version: (GM_info).script.version, license: license, url: 'https://github.com/Oricul/kbin-scripts/' });
+        settingsToggle = kmoAddToggle('Enabled', settingsEnabled, 'Toggle kbin-code-highlighting on or off.');
+        settingsToggle.addEventListener("click", () => {
+            const enabledState = kmoGetToggle(settingsToggle);
+            GM_setValue(settingPrefix + 'enabled', enabledState);
+            if (enabledState === true) {
+                startup();
+            } else {
+                shutdown();
+            }
+        });
+        let configStyles = [];
+        styles.forEach(style => {
+            configStyles.push({ name: style.name, value: style.name });
+        });
+        cssDropdown = kmoAddDropDown('Style', configStyles, css, 'Changes your code stylesheet.');
+        cssDropdown.addEventListener("change", () => {
+            const newStyle = kmoGetDropDown(cssDropdown);
+            const newStyleUrl = (styles.find(style => style.name === newStyle)).url;
+            injectedCss.remove();
+            GM_setValue(settingPrefix + 'css', newStyle);
+            setCss(newStyleUrl);
+        });
+    }
     // Load settings
     const settingPrefix = 'kbin-code-highlighting-'
     let css = GM_getValue(settingPrefix + 'css', "windows-10");
+    let settingsEnabled = GM_getValue(settingPrefix + 'enabled', true);
+    let settingsToggle;
+    let cssDropdown;
     let cssUrl;
     // Correct previous var from version 0.3
     if (css.includes("http")) {
@@ -402,11 +406,10 @@
             break;
         }
     }
-    setCss(cssUrl);
-    // Add settings menu.
-    injectHtmlSettings(settingPrefix + 'css', 'Style');
-    // Configures code section headers/etc.
-    getCodeTags("code");
+    if (settingsEnabled) {
+        startup(true);
+    }
+    createSettings();
     // Configure HLJS and enable.
     hljs.configure({
         ignoreUnescapedHTML: true
