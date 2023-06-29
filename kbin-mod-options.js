@@ -55,6 +55,10 @@ const styles = `
         --ms-transform: translateX(20px);
         transform: translateX(20px);
     }
+
+    .collapsed {
+        display: none !important;
+    }
 `
 const styleSheet = document.createElement('style');
 styleSheet.innerText = styles;
@@ -94,7 +98,28 @@ function kmoAddHeader(title, info = {}) {
         infoIcon.title = infoIconTextContent;
         headerText.appendChild(infoIcon);
     }
+    const show_icon = document.createElement('i');
+    show_icon.className = 'fa-solid fa-chevron-down';
+    show_icon.setAttribute('aria-hidden', 'true');
+    show_icon.style = 'float:right; text-align: center; margin-top: 0.2rem; margin-right: 10px; cursor: pointer; color: var(--kbin-meta-text-color);';
+    headerText.appendChild(show_icon);
     settingsList.appendChild(headerText);
+    const childDiv = document.createElement('div');
+    childDiv.className = 'collapsed';
+    settingsList.appendChild(childDiv);
+    return { childDiv: childDiv, toggle: show_icon };
+}
+
+function kmoToggleSettings(toggle, settingDiv) {
+    if (typeof toggle === 'undefined') {
+        throw new Error('kmoToggleSettings - toggle is undefined');
+    }
+    if (typeof settingDiv === 'undefined') {
+        throw new Error('kmoToggleSettings - settingDiv is undefined');
+    }
+    toggle.classList.toggle('fa-chevron-up');
+    toggle.classList.toggle('fa-chevron-down');
+    settingDiv.classList.toggle('collapsed');
 }
 
 function kmo_createSettingRow(title = '') {
@@ -125,16 +150,19 @@ function kmo_createDropDownOption(name, value, selected = false) {
     return option;
 }
 
-function kmoAddToggle(settingName, currentValue, description = '') {
+function kmoAddToggle(settingDiv, settingName, currentValue, description = '') {
+    if (typeof settingDiv === 'undefined') {
+        throw new Error('kmoAddToggle - settingDiv is undefined');
+    }
     if (typeof settingName === 'undefined') {
         throw new Error('kmoAddToggle - settingName is undefined');
     }
     if (typeof currentValue === 'undefined') {
         throw new Error('kmoAddToggle - currentValue is undefined');
     }
-    const settingDiv = kmo_createSettingRow(description);
+    const thisSettingDiv = kmo_createSettingRow(description);
     const settingNameSpan = kmo_createSettingName(settingName);
-    settingDiv.appendChild(settingNameSpan);
+    thisSettingDiv.appendChild(settingNameSpan);
     const toggleDiv = document.createElement('div');
     toggleDiv.style = 'height: 10px;';
     const toggleLabel = document.createElement('label');
@@ -149,7 +177,8 @@ function kmoAddToggle(settingName, currentValue, description = '') {
     toggleLabel.appendChild(toggleInput);
     toggleLabel.appendChild(sliderDiv);
     toggleDiv.appendChild(toggleLabel);
-    settingDiv.appendChild(toggleDiv);
+    thisSettingDiv.appendChild(toggleDiv);
+    settingDiv.appendChild(thisSettingDiv);
     settingsList.appendChild(settingDiv);
     return toggleInput;
 }
@@ -158,7 +187,10 @@ function kmoGetToggle(toggle) {
     return toggle.checked;
 }
 
-function kmoAddDropDown(settingName, options, currentValue, description = '') {
+function kmoAddDropDown(settingDiv, settingName, options, currentValue, description = '') {
+    if (typeof settingDiv === 'undefined') {
+        throw new Error('kmoAddDropDown - settingDiv is undefined');
+    }
     if (typeof settingName === 'undefined') {
         throw new Error('kmoAddDropDown - settingName is undefined');
     }
@@ -171,7 +203,7 @@ function kmoAddDropDown(settingName, options, currentValue, description = '') {
     if (typeof options !== 'object') {
         throw new Error('kmoAddDropDown - options are not an object');
     }
-    const settingDiv = kmo_createSettingRow(description);
+    const thisSettingDiv = kmo_createSettingRow(description);
     const settingSpan = kmo_createSettingName(settingName);
     const dropDown = document.createElement('select');
     const fixName = settingName.replace(' ', '-');
@@ -182,8 +214,9 @@ function kmoAddDropDown(settingName, options, currentValue, description = '') {
         const optionEntry = kmo_createDropDownOption(option.name, option.value, ((currentValue === option.value) ? true : false));
         dropDown.appendChild(optionEntry);
     });
-    settingDiv.appendChild(settingSpan);
-    settingDiv.appendChild(dropDown);
+    thisSettingDiv.appendChild(settingSpan);
+    thisSettingDiv.appendChild(dropDown);
+    settingDiv.appendChild(thisSettingDiv);
     settingsList.appendChild(settingDiv);
     return dropDown;
 }
@@ -192,31 +225,38 @@ function kmoGetDropDown(dropDown) {
     return dropDown.value;
 }
 
-function kmoAddButton(settingName, buttonLabel, description = '') {
+function kmoAddButton(settingDiv, settingName, buttonLabel, description = '') {
+    if (typeof settingDiv === 'undefined') {
+        throw new Error('kmoAddButton - settingDiv is undefined');
+    }
     if (typeof settingName === 'undefined') {
         throw new Error('kmoAddButton - settingName is undefined');
     }
     if (typeof buttonLabel === 'undefined') {
         throw new Error('kmoAddButton - buttonLabel is undefined');
     }
-    const settingDiv = kmo_createSettingRow(description);
+    const thisSettingDiv = kmo_createSettingRow(description);
     const settingSpan = kmo_createSettingName(settingName);
     const button = document.createElement('button');
     button.innerHTML = buttonLabel;
-    settingDiv.appendChild(settingSpan);
-    settingDiv.appendChild(button);
+    thisSettingDiv.appendChild(settingSpan);
+    thisSettingDiv.appendChild(button);
+    settingDiv.appendChild(thisSettingDiv);
     settingsList.appendChild(settingDiv);
     return button;
 }
 
-function kmoAddColorDropper(settingName, currentColor, description = '') {
+function kmoAddColorDropper(settingDiv, settingName, currentColor, description = '') {
+    if (typeof settingDiv === 'undefined') {
+        throw new Error('kmoAddColorDropper - settingDiv is undefined');
+    }
     if (typeof settingName === 'undefined') {
         throw new Error('kmoAddColorDropper - settingName is undefined');
     }
     if (typeof currentColor === 'undefined') {
         throw new Error('kmoAddColorDropper - currentColor is undefined');
     }
-    const settingDiv = kmo_createSettingRow(description);
+    const thisSettingDiv = kmo_createSettingRow(description);
     const settingSpan = kmo_createSettingName(settingName);
     const colorDropper = document.createElement('input');
     colorDropper.type = 'color';
@@ -233,8 +273,9 @@ function kmoAddColorDropper(settingName, currentColor, description = '') {
         currentColor = fixedCurrentColor;
     }
     colorDropper.value = currentColor;
-    settingDiv.appendChild(settingSpan);
-    settingDiv.appendChild(colorDropper);
+    thisSettingDiv.appendChild(settingSpan);
+    thisSettingDiv.appendChild(colorDropper);
+    settingDiv.appendChild(thisSettingDiv);
     settingsList.appendChild(settingDiv);
     return colorDropper;
 }
