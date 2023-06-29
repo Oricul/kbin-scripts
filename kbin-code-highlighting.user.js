@@ -53,7 +53,8 @@
 // @match        https://kbin.cocopoops.com/*
 // @match        https://thekittysays.icu/*
 // @match        https://dev-kbin.korako.me/*
-// @match        https://
+// @match        https://lab2.kbin.pub/*
+// @match        https://lab3.kbin.pub/*
 // @icon         https://kbin.social/favicon.svg
 // @require      https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js
 // @require      https://github.com/Oricul/kbin-scripts/raw/main/kbin-mod-options.js
