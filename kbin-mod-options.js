@@ -1,6 +1,6 @@
 /*
     Name:           kbin-mod-options
-    Version:        0.1
+    Version:        0.2
     Description:    Attempt at standardizing mod options.
     Author:         0rito
     License:        MIT
