@@ -107,7 +107,10 @@ function kmoAddHeader(title, info = {}) {
     const childDiv = document.createElement('div');
     childDiv.className = 'collapsed';
     settingsList.appendChild(childDiv);
-    return { childDiv: childDiv, toggle: show_icon };
+    show_icon.addEventListener("click", () => {
+        kmoToggleSettings(show_icon, childDiv);
+    });
+    return childDiv;
 }
 
 function kmoToggleSettings(toggle, settingDiv) {
