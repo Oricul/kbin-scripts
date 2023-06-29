@@ -1,11 +1,11 @@
 /*
     Name:           kbin-mod-options
-    Version:        0.2
+    Version:        0.2.1
     Description:    Attempt at standardizing mod options.
     Author:         0rito
     License:        MIT
 */
-const styles = `
+const kmoStyles = `
     .switch {
         position: relative;
         //display: inline-block;
@@ -61,7 +61,7 @@ const styles = `
     }
 `
 const styleSheet = document.createElement('style');
-styleSheet.innerText = styles;
+styleSheet.innerText = kmoStyles;
 document.head.appendChild(styleSheet);
 
 const settingsList = document.querySelector(".settings-list");
