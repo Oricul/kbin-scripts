@@ -1,6 +1,6 @@
 /*
     Name:           kbin-mod-options
-    Version:        0.2.1
+    Version:        0.2.2
     Description:    Attempt at standardizing mod options.
     Author:         0rito
     License:        MIT
@@ -108,10 +108,6 @@ function kmoAddHeader(title, info = {}) {
     headerText.appendChild(show_icon);
     const childDiv = document.createElement('div');
     childDiv.className = 'collapsed';
-    //settingsList.forEach(panel => {
-    //    panel.appendChild(headerText);
-    //    panel.appendChild(childDiv);
-    //});
     settingsList.appendChild(headerText);
     settingsList.appendChild(childDiv);
     show_icon.addEventListener("click", () => {
@@ -190,9 +186,6 @@ function kmoAddToggle(settingDiv, settingName, currentValue, description = '') {
     thisSettingDiv.appendChild(toggleDiv);
     settingDiv.appendChild(thisSettingDiv);
     settingsList.appendChild(settingDiv);
-    //settingsList.forEach(panel => {
-    //    panel.appendChild(settingDiv);
-    //});
     return toggleInput;
 }
 
@@ -231,9 +224,6 @@ function kmoAddDropDown(settingDiv, settingName, options, currentValue, descript
     thisSettingDiv.appendChild(dropDown);
     settingDiv.appendChild(thisSettingDiv);
     settingsList.appendChild(settingDiv);
-    //settingsList.forEach(panel => {
-    //    panel.appendChild(settingDiv);
-    //});
     return dropDown;
 }
 
@@ -259,9 +249,6 @@ function kmoAddButton(settingDiv, settingName, buttonLabel, description = '') {
     thisSettingDiv.appendChild(button);
     settingDiv.appendChild(thisSettingDiv);
     settingsList.appendChild(settingDiv);
-    //settingsList.forEach(panel => {
-    //    panel.appendChild(settingDiv);
-    //});
     return button;
 }
 
@@ -296,8 +283,5 @@ function kmoAddColorDropper(settingDiv, settingName, currentColor, description =
     thisSettingDiv.appendChild(colorDropper);
     settingDiv.appendChild(thisSettingDiv);
     settingsList.appendChild(settingDiv);
-    //settingsList.forEach(panel => {
-    //    panel.appendChild(settingDiv);
-    //});
     return colorDropper;
 }
