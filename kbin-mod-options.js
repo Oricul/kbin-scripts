@@ -64,24 +64,18 @@ const styleSheet = document.createElement('style');
 styleSheet.innerText = kmoStyles;
 document.head.appendChild(styleSheet);
 
-let settingsList;
+let settingsList = [];
+if (document.querySelector('.settings-list')) {
+    settingsList.push(document.querySelector('.settings-list'));
+}
+if (document.querySelector('.settings-panel')) {
+    settingsList.push(document.querySelector('.settings-panel'));
+}
 
 function kmoAddHeader(title, info = {}) {
     if (typeof title === 'undefined') {
         throw new Error('kmoAddHeader - title is undefined')
     }
-    window.addEventListener("load", function () {
-        if (document.querySelector('.settings-list')) {
-            settingsList = document.querySelector('.settings-list');
-            console.log('settingsList');
-        } else if (document.querySelector('.settings-panel')) {
-            settingsList = document.querySelector('.settings-panel');
-            console.log('settingsPanel');
-        } else {
-            console.log('no panel');
-            throw new Error("kbin-mod-options - Settings pane doesn't exist, did another mod override it?");
-        }
-    });
     const headerText = document.createElement('strong');
     headerText.textContent = title;
     if (Object.keys(info).length > 0) {
@@ -115,10 +109,14 @@ function kmoAddHeader(title, info = {}) {
     show_icon.setAttribute('aria-hidden', 'true');
     show_icon.style = 'float:right; text-align: center; margin-top: 0.2rem; margin-right: 10px; cursor: pointer; color: var(--kbin-meta-text-color);';
     headerText.appendChild(show_icon);
-    settingsList.appendChild(headerText);
     const childDiv = document.createElement('div');
     childDiv.className = 'collapsed';
-    settingsList.appendChild(childDiv);
+    settingsList.forEach(panel => {
+        panel.appendChild(headerText);
+        panel.appendChild(childDiv);
+    });
+    //settingsList.appendChild(headerText);
+    //settingsList.appendChild(childDiv);
     show_icon.addEventListener("click", () => {
         kmoToggleSettings(show_icon, childDiv);
     });
@@ -194,7 +192,10 @@ function kmoAddToggle(settingDiv, settingName, currentValue, description = '') {
     toggleDiv.appendChild(toggleLabel);
     thisSettingDiv.appendChild(toggleDiv);
     settingDiv.appendChild(thisSettingDiv);
-    settingsList.appendChild(settingDiv);
+    settingsList.forEach(panel => {
+        //settingsList.appendChild(settingDiv);
+        panel.appendChild(settingDiv);
+    });
     return toggleInput;
 }
 
@@ -232,7 +233,10 @@ function kmoAddDropDown(settingDiv, settingName, options, currentValue, descript
     thisSettingDiv.appendChild(settingSpan);
     thisSettingDiv.appendChild(dropDown);
     settingDiv.appendChild(thisSettingDiv);
-    settingsList.appendChild(settingDiv);
+    //settingsList.appendChild(settingDiv);
+    settingsList.forEach(panel => {
+        panel.appendChild(settingDiv);
+    });
     return dropDown;
 }
 
@@ -257,7 +261,10 @@ function kmoAddButton(settingDiv, settingName, buttonLabel, description = '') {
     thisSettingDiv.appendChild(settingSpan);
     thisSettingDiv.appendChild(button);
     settingDiv.appendChild(thisSettingDiv);
-    settingsList.appendChild(settingDiv);
+    //settingsList.appendChild(settingDiv);
+    settingsList.forEach(panel => {
+        panel.appendChild(settingDiv);
+    });
     return button;
 }
 
@@ -291,6 +298,9 @@ function kmoAddColorDropper(settingDiv, settingName, currentColor, description =
     thisSettingDiv.appendChild(settingSpan);
     thisSettingDiv.appendChild(colorDropper);
     settingDiv.appendChild(thisSettingDiv);
-    settingsList.appendChild(settingDiv);
+    //settingsList.appendChild(settingDiv);
+    settingsList.forEach(panel => {
+        panel.appendChild(settingDiv);
+    });
     return colorDropper;
 }
