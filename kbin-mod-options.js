@@ -70,16 +70,18 @@ function kmoAddHeader(title, info = {}) {
     if (typeof title === 'undefined') {
         throw new Error('kmoAddHeader - title is undefined')
     }
-    if (document.querySelector('.settings-list')) {
-        settingsList = document.querySelector('.settings-list');
-        console.log('settingsList');
-    } else if (document.querySelector('.settings-panel')) {
-        settingsList = document.querySelector('.settings-panel');
-        console.log('settingsPanel');
-    } else {
-        console.log('no panel');
-        throw new Error("kbin-mod-options - Settings pane doesn't exist, did another mod override it?");
-    }
+    window.addEventListener("load", function () {
+        if (document.querySelector('.settings-list')) {
+            settingsList = document.querySelector('.settings-list');
+            console.log('settingsList');
+        } else if (document.querySelector('.settings-panel')) {
+            settingsList = document.querySelector('.settings-panel');
+            console.log('settingsPanel');
+        } else {
+            console.log('no panel');
+            throw new Error("kbin-mod-options - Settings pane doesn't exist, did another mod override it?");
+        }
+    });
     const headerText = document.createElement('strong');
     headerText.textContent = title;
     if (Object.keys(info).length > 0) {
