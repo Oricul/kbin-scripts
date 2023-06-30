@@ -64,7 +64,13 @@ const styleSheet = document.createElement('style');
 styleSheet.innerText = kmoStyles;
 document.head.appendChild(styleSheet);
 
-const settingsList = document.querySelector(".settings-list");
+if (document.querySelector('.settings-list')) {
+    const settingsList = document.querySelector('.settings-list');
+} else if (document.querySelector('.settings-panel')) {
+    const settingsList = document.querySelector('.settings-panel');
+} else {
+    throw new Error("kbin-mod-options - Settings pane doesn't exist, did another mod override it?");
+}
 
 function kmoAddHeader(title, info = {}) {
     if (typeof title === 'undefined') {
