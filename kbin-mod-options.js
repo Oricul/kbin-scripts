@@ -1,6 +1,6 @@
 /*
     Name:           kbin-mod-options
-    Version:        0.2.1
+    Version:        0.2.2
     Description:    Attempt at standardizing mod options.
     Author:         0rito
     License:        MIT
@@ -64,7 +64,10 @@ const styleSheet = document.createElement('style');
 styleSheet.innerText = kmoStyles;
 document.head.appendChild(styleSheet);
 
-const settingsList = document.querySelector(".settings-list");
+const ourSection = document.createElement('div');
+ourSection.className = 'kmo-settings-list';
+document.querySelector('#settings.section').appendChild(ourSection);
+const settingsList = ourSection;
 
 function kmoAddHeader(title, info = {}) {
     if (typeof title === 'undefined') {
@@ -103,9 +106,9 @@ function kmoAddHeader(title, info = {}) {
     show_icon.setAttribute('aria-hidden', 'true');
     show_icon.style = 'float:right; text-align: center; margin-top: 0.2rem; margin-right: 10px; cursor: pointer; color: var(--kbin-meta-text-color);';
     headerText.appendChild(show_icon);
-    settingsList.appendChild(headerText);
     const childDiv = document.createElement('div');
     childDiv.className = 'collapsed';
+    settingsList.appendChild(headerText);
     settingsList.appendChild(childDiv);
     show_icon.addEventListener("click", () => {
         kmoToggleSettings(show_icon, childDiv);
