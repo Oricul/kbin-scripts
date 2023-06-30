@@ -71,6 +71,10 @@ if (document.querySelector('.settings-list')) {
 if (document.querySelector('.settings-panel')) {
     settingsList.push(document.querySelector('.settings-panel'));
 }
+const ourSection = document.createElement('div');
+ourSection.className = 'settings-list kmo-settings-list';
+document.querySelector('#settings.section').appendChild(ourSection);
+settingsList.push(ourSection);
 
 function kmoAddHeader(title, info = {}) {
     if (typeof title === 'undefined') {
