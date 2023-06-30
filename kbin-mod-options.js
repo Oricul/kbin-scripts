@@ -64,17 +64,10 @@ const styleSheet = document.createElement('style');
 styleSheet.innerText = kmoStyles;
 document.head.appendChild(styleSheet);
 
-let settingsList = [];
-if (document.querySelector('.settings-list')) {
-    settingsList.push(document.querySelector('.settings-list'));
-}
-if (document.querySelector('.settings-panel')) {
-    settingsList.push(document.querySelector('.settings-panel'));
-}
 const ourSection = document.createElement('div');
 ourSection.className = 'kmo-settings-list';
 document.querySelector('#settings.section').appendChild(ourSection);
-settingsList.push(ourSection);
+const settingsList = ourSection;
 
 function kmoAddHeader(title, info = {}) {
     if (typeof title === 'undefined') {
@@ -115,12 +108,12 @@ function kmoAddHeader(title, info = {}) {
     headerText.appendChild(show_icon);
     const childDiv = document.createElement('div');
     childDiv.className = 'collapsed';
-    settingsList.forEach(panel => {
-        panel.appendChild(headerText);
-        panel.appendChild(childDiv);
-    });
-    //settingsList.appendChild(headerText);
-    //settingsList.appendChild(childDiv);
+    //settingsList.forEach(panel => {
+    //    panel.appendChild(headerText);
+    //    panel.appendChild(childDiv);
+    //});
+    settingsList.appendChild(headerText);
+    settingsList.appendChild(childDiv);
     show_icon.addEventListener("click", () => {
         kmoToggleSettings(show_icon, childDiv);
     });
@@ -196,10 +189,10 @@ function kmoAddToggle(settingDiv, settingName, currentValue, description = '') {
     toggleDiv.appendChild(toggleLabel);
     thisSettingDiv.appendChild(toggleDiv);
     settingDiv.appendChild(thisSettingDiv);
-    settingsList.forEach(panel => {
-        //settingsList.appendChild(settingDiv);
-        panel.appendChild(settingDiv);
-    });
+    settingsList.appendChild(settingDiv);
+    //settingsList.forEach(panel => {
+    //    panel.appendChild(settingDiv);
+    //});
     return toggleInput;
 }
 
@@ -237,10 +230,10 @@ function kmoAddDropDown(settingDiv, settingName, options, currentValue, descript
     thisSettingDiv.appendChild(settingSpan);
     thisSettingDiv.appendChild(dropDown);
     settingDiv.appendChild(thisSettingDiv);
-    //settingsList.appendChild(settingDiv);
-    settingsList.forEach(panel => {
-        panel.appendChild(settingDiv);
-    });
+    settingsList.appendChild(settingDiv);
+    //settingsList.forEach(panel => {
+    //    panel.appendChild(settingDiv);
+    //});
     return dropDown;
 }
 
@@ -265,10 +258,10 @@ function kmoAddButton(settingDiv, settingName, buttonLabel, description = '') {
     thisSettingDiv.appendChild(settingSpan);
     thisSettingDiv.appendChild(button);
     settingDiv.appendChild(thisSettingDiv);
-    //settingsList.appendChild(settingDiv);
-    settingsList.forEach(panel => {
-        panel.appendChild(settingDiv);
-    });
+    settingsList.appendChild(settingDiv);
+    //settingsList.forEach(panel => {
+    //    panel.appendChild(settingDiv);
+    //});
     return button;
 }
 
@@ -302,9 +295,9 @@ function kmoAddColorDropper(settingDiv, settingName, currentColor, description =
     thisSettingDiv.appendChild(settingSpan);
     thisSettingDiv.appendChild(colorDropper);
     settingDiv.appendChild(thisSettingDiv);
-    //settingsList.appendChild(settingDiv);
-    settingsList.forEach(panel => {
-        panel.appendChild(settingDiv);
-    });
+    settingsList.appendChild(settingDiv);
+    //settingsList.forEach(panel => {
+    //    panel.appendChild(settingDiv);
+    //});
     return colorDropper;
 }
