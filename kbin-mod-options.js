@@ -64,22 +64,21 @@ const styleSheet = document.createElement('style');
 styleSheet.innerText = kmoStyles;
 document.head.appendChild(styleSheet);
 
-window.addEventListener("load", function () {
-    if (document.querySelector('.settings-list')) {
-        const settingsList = document.querySelector('.settings-list');
-        console.log('settingsList');
-    } else if (document.querySelector('.settings-panel')) {
-        const settingsList = document.querySelector('.settings-panel');
-        console.log('settingsPanel');
-    } else {
-        console.log('no panel');
-        throw new Error("kbin-mod-options - Settings pane doesn't exist, did another mod override it?");
-    }
-});
+let settingsList;
 
 function kmoAddHeader(title, info = {}) {
     if (typeof title === 'undefined') {
         throw new Error('kmoAddHeader - title is undefined')
+    }
+    if (document.querySelector('.settings-list')) {
+        settingsList = document.querySelector('.settings-list');
+        console.log('settingsList');
+    } else if (document.querySelector('.settings-panel')) {
+        settingsList = document.querySelector('.settings-panel');
+        console.log('settingsPanel');
+    } else {
+        console.log('no panel');
+        throw new Error("kbin-mod-options - Settings pane doesn't exist, did another mod override it?");
     }
     const headerText = document.createElement('strong');
     headerText.textContent = title;
