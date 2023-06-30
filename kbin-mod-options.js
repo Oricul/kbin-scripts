@@ -72,8 +72,8 @@ window.addEventListener("load", function () {
         const settingsList = document.querySelector('.settings-panel');
         console.log('settingsPanel');
     } else {
-        throw new Error("kbin-mod-options - Settings pane doesn't exist, did another mod override it?");
         console.log('no panel');
+        throw new Error("kbin-mod-options - Settings pane doesn't exist, did another mod override it?");
     }
 });
 
