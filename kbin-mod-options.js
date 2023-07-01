@@ -57,7 +57,7 @@ const kmoStyles = `
     }
 
     kmo-settings-row .expanded {
-        display: block;
+        display: inline;
     }
 
     .kmo-settings-row {
