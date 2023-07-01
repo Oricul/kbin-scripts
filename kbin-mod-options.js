@@ -56,8 +56,8 @@ const kmoStyles = `
         transform: translateX(20px);
     }
 
-    .kmo-settings-row expanded {
-        display: flex !important;
+    .kmo-settings-row .expanded {
+        display: block !important;
     }
 
     .kmo-settings-row {
