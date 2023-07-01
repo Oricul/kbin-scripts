@@ -60,6 +60,11 @@ const kmoStyles = `
         display: block !important;
     }
 
+    .kmo-settings-header {
+        border-bottom: var(--kbin-sidebar-header-border);
+        color: var(--kbin-sidebar-header-text-color);
+    }
+
     .kmo-settings-row {
         display: none;
         animation: showKmoSettingsRow .25s ease-in-out;
@@ -90,6 +95,7 @@ function kmoAddHeader(title, info = {}) {
         throw new Error('kmoAddHeader - title is undefined')
     }
     const headerText = document.createElement('strong');
+    headerText.className = 'kmo-settings-header';
     headerText.textContent = title;
     if (Object.keys(info).length > 0) {
         const infoIcon = document.createElement('i');
