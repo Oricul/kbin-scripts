@@ -1,6 +1,6 @@
 /*
     Name:           kbin-mod-options
-    Version:        0.2.2
+    Version:        0.2.3
     Description:    Attempt at standardizing mod options.
     Author:         0rito
     License:        MIT
@@ -63,6 +63,7 @@ const kmoStyles = `
     .kmo-settings-header {
         border-bottom: var(--kbin-sidebar-header-border);
         color: var(--kbin-sidebar-header-text-color);
+        margin-bottom: 0.5em;
     }
 
     .kmo-settings-row {
@@ -73,7 +74,7 @@ const kmoStyles = `
     @keyframes showKmoSettingsRow {
         0% {
             opacity: 0;
-            transform: translateY(-2em);
+            transform: translateY(-1.5em);
         }
         to {
             opacity: 1;
