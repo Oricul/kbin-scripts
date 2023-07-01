@@ -61,15 +61,17 @@ const kmoStyles = `
     }
 
     .kmo-settings-row {
-        animation: showKmoSettingsRow {
-            0% {
-                opacity: 0;
-                transform: translateY(-2em);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        animation: showKmoSettingsRow .25s ease-in-out;
+    }
+
+    @keyframes showKmoSettingsRow {
+        0% {
+            opacity: 0;
+            transform: translateY(-2em);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
     }
 `
