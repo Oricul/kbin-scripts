@@ -94,8 +94,9 @@ function kmoAddHeader(title, info = {}) {
     if (typeof title === 'undefined') {
         throw new Error('kmoAddHeader - title is undefined')
     }
+    const headerDiv = document.createElement('div');
+    headerDiv.className = 'kmo-settings-header';
     const headerText = document.createElement('strong');
-    headerText.className = 'kmo-settings-header';
     headerText.textContent = title;
     if (Object.keys(info).length > 0) {
         const infoIcon = document.createElement('i');
@@ -130,7 +131,8 @@ function kmoAddHeader(title, info = {}) {
     headerText.appendChild(show_icon);
     const childDiv = document.createElement('div');
     childDiv.className = 'kmo-settings-row';
-    settingsList.appendChild(headerText);
+    headerDiv.appendChild(headerText);
+    settingsList.appendChild(headerDiv);
     settingsList.appendChild(childDiv);
     show_icon.addEventListener("click", () => {
         kmoToggleSettings(show_icon, childDiv);
