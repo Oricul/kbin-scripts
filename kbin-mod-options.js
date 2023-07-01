@@ -56,10 +56,6 @@ const kmoStyles = `
         transform: translateX(20px);
     }
 
-    kmo-settings-row .expanded {
-        display: inline;
-    }
-
     .kmo-settings-row {
         display: none;
         animation: showKmoSettingsRow .25s ease-in-out;
