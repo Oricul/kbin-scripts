@@ -56,6 +56,10 @@ const kmoStyles = `
         transform: translateX(20px);
     }
 
+    .kmo-settings-row expanded {
+        display: flex !important;
+    }
+
     .kmo-settings-row {
         display: none;
         animation: showKmoSettingsRow .25s ease-in-out;
@@ -119,7 +123,7 @@ function kmoAddHeader(title, info = {}) {
     show_icon.style = 'float:right; text-align: center; margin-top: 0.2rem; margin-right: 10px; cursor: pointer; color: var(--kbin-meta-text-color);';
     headerText.appendChild(show_icon);
     const childDiv = document.createElement('div');
-    childDiv.className = 'kmo-settings-row row';
+    childDiv.className = 'kmo-settings-row';
     settingsList.appendChild(headerText);
     settingsList.appendChild(childDiv);
     show_icon.addEventListener("click", () => {
