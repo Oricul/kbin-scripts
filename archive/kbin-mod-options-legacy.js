@@ -1,6 +1,6 @@
 /*
     Name:           kbin-mod-options
-    Version:        0.2.3
+    Version:        0.2.1
     Description:    Attempt at standardizing mod options.
     Author:         0rito
     License:        MIT
@@ -56,47 +56,20 @@ const kmoStyles = `
         transform: translateX(20px);
     }
 
-    .kmo-settings-row.expanded {
-        display: block !important;
-    }
-
-    .kmo-settings-header {
-        border-bottom: var(--kbin-sidebar-header-border);
-        color: var(--kbin-sidebar-header-text-color);
-        margin-bottom: 0.5em;
-    }
-
-    .kmo-settings-row {
-        display: none;
-        animation: showKmoSettingsRow .25s ease-in-out;
-    }
-
-    @keyframes showKmoSettingsRow {
-        0% {
-            opacity: 0;
-            transform: translateY(-1.5em);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .collapsed {
+        display: none !important;
     }
 `
 const styleSheet = document.createElement('style');
 styleSheet.innerText = kmoStyles;
 document.head.appendChild(styleSheet);
 
-const ourSection = document.createElement('div');
-ourSection.className = 'kmo-settings-list';
-document.querySelector('#settings.section').appendChild(ourSection);
-const settingsList = ourSection;
+const settingsList = document.querySelector(".settings-list");
 
 function kmoAddHeader(title, info = {}) {
     if (typeof title === 'undefined') {
         throw new Error('kmoAddHeader - title is undefined')
     }
-    const headerDiv = document.createElement('div');
-    headerDiv.className = 'kmo-settings-header';
     const headerText = document.createElement('strong');
     headerText.textContent = title;
     if (Object.keys(info).length > 0) {
@@ -130,10 +103,9 @@ function kmoAddHeader(title, info = {}) {
     show_icon.setAttribute('aria-hidden', 'true');
     show_icon.style = 'float:right; text-align: center; margin-top: 0.2rem; margin-right: 10px; cursor: pointer; color: var(--kbin-meta-text-color);';
     headerText.appendChild(show_icon);
+    settingsList.appendChild(headerText);
     const childDiv = document.createElement('div');
-    childDiv.className = 'kmo-settings-row';
-    headerDiv.appendChild(headerText);
-    settingsList.appendChild(headerDiv);
+    childDiv.className = 'collapsed';
     settingsList.appendChild(childDiv);
     show_icon.addEventListener("click", () => {
         kmoToggleSettings(show_icon, childDiv);
@@ -150,7 +122,7 @@ function kmoToggleSettings(toggle, settingDiv) {
     }
     toggle.classList.toggle('fa-chevron-up');
     toggle.classList.toggle('fa-chevron-down');
-    settingDiv.classList.toggle('expanded');
+    settingDiv.classList.toggle('collapsed');
 }
 
 function kmo_createSettingRow(title = '') {
