@@ -59,6 +59,19 @@ const kmoStyles = `
     .collapsed {
         display: none !important;
     }
+
+    .kmo-settings-row {
+        animation: showKmoSettingsRow {
+            0% {
+                opacity: 0;
+                transform: translateY(-2em);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    }
 `
 const styleSheet = document.createElement('style');
 styleSheet.innerText = kmoStyles;
@@ -107,7 +120,7 @@ function kmoAddHeader(title, info = {}) {
     show_icon.style = 'float:right; text-align: center; margin-top: 0.2rem; margin-right: 10px; cursor: pointer; color: var(--kbin-meta-text-color);';
     headerText.appendChild(show_icon);
     const childDiv = document.createElement('div');
-    childDiv.className = 'collapsed';
+    childDiv.className = 'kmo-settings-row collapsed';
     settingsList.appendChild(headerText);
     settingsList.appendChild(childDiv);
     show_icon.addEventListener("click", () => {
