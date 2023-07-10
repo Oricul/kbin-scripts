@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         kbin-code-highlighting
 // @namespace    https://github.com/Oricul
-// @version      0.4.3
+// @version      0.5.0
 // @description  Use HLJS to add code highlighting to kbin. Hopefully adds some legibility as well.
 // @author       0rito
 // @license      MIT
@@ -264,66 +264,78 @@
         } else {
             addHeaders('code');
         }
+        // Support for infinite scrolling.
+        // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+        const targetNode = document.getElementById('content').children[0];
+        const config = { childList: true };
+
+        const callback = (mutationList, observer) => {
+            for (const mutation of mutationList) {
+                if (mutation.type === 'childList') {
+                    addHeaders('code');
+                }
+            }
+        }
+        observer = new MutationObserver(callback);
+        observer.observe(targetNode, config);
     }
     function shutdown() {
         injectedCss.remove();
         document.querySelectorAll('.kch_header').forEach(header => {
             header.remove();
         });
+        observer.disconnect();
     }
     function addTags(item) {
-        // Creates the top bar for code section displaying name, copy button - and maybe collapse later.
-        const orig_code = item.textContent;
-        let lang;
-        for (let name of item.className.split(' ')) {
-            if (name.includes('-')) {
-                lang = name.split('-')[1];
-                break;
+        // Only add tags if the header doesn't already exist!
+        if (!(item.parentElement.children[0].classList.contains('kch_header'))) {
+            // Creates the top bar for code section displaying name, copy button - and maybe collapse later.
+            const orig_code = item.textContent;
+            let lang;
+            for (let name of item.className.split(' ')) {
+                if (name.includes('-')) {
+                    lang = name.split('-')[1];
+                    break;
+                }
             }
-        }
-        const parent_html = item.parentElement.innerHTML;
-        const header = document.createElement('div');
-        header.className = 'hljs kch_header';
-        header.setAttribute('style', 'padding-top: 10px; padding-bottom: 10px; border-bottom-style: dashed;');
-        const span = document.createElement('span');
-        span.setAttribute('class', 'hljs-keyword');
-        span.setAttribute('style', 'margin-left: 20px;');
-        span.innerHTML = lang;
-        const icon = document.createElement('i');
-        icon.className = 'fa-solid fa-copy hljs-section';
-        icon.setAttribute('aria-hidden', 'true');
-        icon.style = 'margin-left: 10px; cursor: pointer;';
-        icon.onclick = function() {
-            document.execCommand('copy');
-        }
-        icon.addEventListener('copy', function(event) {
-            event.preventDefault();
-            if (event.clipboardData) {
-                event.clipboardData.setData('text/plain', orig_code);
+            const parent_html = item.parentElement.innerHTML;
+            const header = document.createElement('div');
+            header.className = 'hljs kch_header';
+            header.setAttribute('style', 'padding-top: 10px; padding-bottom: 10px; border-bottom-style: dashed;');
+            const span = document.createElement('span');
+            span.setAttribute('class', 'hljs-keyword');
+            span.setAttribute('style', 'margin-left: 20px;');
+            span.innerHTML = lang;
+            const icon = document.createElement('i');
+            icon.className = 'fa-solid fa-copy hljs-section';
+            icon.setAttribute('aria-hidden', 'true');
+            icon.style = 'margin-left: 10px; cursor: pointer;';
+            icon.onclick = function () {
+                navigator.clipboard.writeText(orig_code);
                 tooltip.style.display = 'inline';
-                setTimeout(function() {
+                setTimeout(function () {
                     tooltip.style.display = 'none';
                 }, 1000);
             }
-        });
-        const span_copied = document.createElement('span');
-        span_copied.id = 'copied-tooltip';
-        span_copied.innerHTML = 'COPIED!';
-        span_copied.style = 'display: none; margin-left: 10px;';
-        const hide_icon = document.createElement('i');
-        hide_icon.className = 'fa-solid fa-chevron-up hljs-section';
-        hide_icon.setAttribute('aria-hidden', 'true');
-        hide_icon.style = 'float: right; margin-right: 20px; cursor: pointer;';
-        hide_icon.addEventListener('click', function() {
-            hide_icon.classList.toggle('fa-chevron-up');
-            hide_icon.classList.toggle('fa-chevron-down');
-            item.classList.toggle('collapsed');
-        });
-        header.appendChild(span);
-        header.appendChild(icon);
-        let tooltip = header.appendChild(span_copied);
-        header.appendChild(hide_icon);
-        item.parentElement.prepend(header);
+            const span_copied = document.createElement('span');
+            span_copied.id = 'copied-tooltip';
+            span_copied.innerHTML = 'COPIED!';
+            span_copied.style = 'display: none; margin-left: 10px;';
+            const hide_icon = document.createElement('i');
+            hide_icon.className = 'fa-solid fa-chevron-up hljs-section';
+            hide_icon.setAttribute('aria-hidden', 'true');
+            hide_icon.style = 'float: right; margin-right: 20px; cursor: pointer;';
+            hide_icon.addEventListener('click', function () {
+                hide_icon.classList.toggle('fa-chevron-up');
+                hide_icon.classList.toggle('fa-chevron-down');
+                item.classList.toggle('collapsed');
+            });
+            header.appendChild(span);
+            header.appendChild(icon);
+            let tooltip = header.appendChild(span_copied);
+            header.appendChild(hide_icon);
+            item.parentElement.prepend(header);
+        }
     }
     function addPreTag(parent, placement, code) {
         // For some reason, sometimes code isn't wrapped in pre. Let's fix that.
@@ -403,6 +415,7 @@
     let settingsToggle;
     let cssDropdown;
     let cssUrl;
+    let observer;
     // Correct previous var from version 0.3
     if (css.includes("http")) {
         css = "windows-10";
