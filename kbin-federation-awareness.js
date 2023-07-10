@@ -82,6 +82,8 @@
         let articleFed = ` article.data-federated {  box-shadow: `;
         let commentMod = ` .comment.data-moderated {  box-shadow: `;
         let articleMod = ` article.data-moderated {  box-shadow: `;
+        let commentHome = ` .comment.data-home {  box-shadow: `;
+        let articleHome = ` article.data-home {  box-shadow: `;
         let fedColor0 = settingsFed;
         let fedColor1 = subtractColor(fedColor0, 50);
         let fedColor2 = subtractColor(fedColor1, 50);
@@ -90,23 +92,32 @@
         let modColor1 = subtractColor(modColor0, 50);
         let modColor2 = subtractColor(modColor1, 50);;
         let modColor3 = subtractColor(modColor2, 50);;
+        let homeColor0 = settingsHome;
+        let homeColor1 = subtractColor(homeColor0, 50);
+        let homeColor2 = subtractColor(homeColor1, 50);
+        let homeColor3 = subtractColor(homeColor2, 50);
         commentMod += `1px 0 0 ` + modColor0 + `, 2px 0 0 ` + modColor0 + `, 3px 0 0 ` + modColor1 + `, 4px 0 0 ` + modColor2 + `, 5px 0 0 ` + modColor3 + `; }`;
         commentFed += `1px 0 0 ` + fedColor0 + `, 2px 0 0 ` + fedColor0 + `, 3px 0 0 ` + fedColor1 + `, 4px 0 0 ` + fedColor2 + `, 5px 0 0 ` + fedColor3 + `; }`;
+        commentHome += `1px 0 0 ` + homeColor0 + `, 2px 0 0 ` + homeColor0 + `, 3px 0 0 ` + homeColor1 + `, 4px 0 0 ` + homeColor2 + `, 5px 0 0 ` + homeColor3 + `; }`;
         if (settingArticleSide === 'left' || settingArticleSide === 'both') {
             articleMod += `-1px 0 0 ` + modColor0 + `, -2px 0 0 ` + modColor0 + `, -3px 0 0 ` + modColor1 + `, -4px 0 0 ` + modColor2 + `, -5px 0 0 ` + modColor3;
             articleFed += `-1px 0 0 ` + fedColor0 + `, -2px 0 0 ` + fedColor0 + `, -3px 0 0 ` + fedColor1 + `, -4px 0 0 ` + fedColor2 + `, -5px 0 0 ` + fedColor3;
+            articleHome += `-1px 0 0 ` + homeColor0 + `, -2px 0 0 ` + homeColor0 + `, -3px 0 0 ` + homeColor1 + `, -4px 0 0 ` + homeColor2 + `, -5px 0 0 ` + homeColor3;
         }
         if (settingArticleSide === 'right' || settingArticleSide === 'both') {
             if (settingArticleSide === 'both') {
                 articleMod += `, `;
                 articleFed += `, `;
+                articleHome += `, `;
             }
             articleMod += `1px 0 0 ` + modColor0 + `, 2px 0 0 ` + modColor0 + `, 3px 0 0 ` + modColor1 + `, 4px 0 0 ` + modColor2 + `, 5px 0 0 ` + modColor3;
             articleFed += `1px 0 0 ` + fedColor0 + `, 2px 0 0 ` + fedColor0 + `, 3px 0 0 ` + fedColor1 + `, 4px 0 0 ` + fedColor2 + `, 5px 0 0 ` + fedColor3;
+            articleHome += `1px 0 0 ` + homeColor0 + `, 2px 0 0 ` + homeColor0 + `, 3px 0 0 ` + homeColor1 + `, 4px 0 0 ` + homeColor2 + `, 5px 0 0 ` + homeColor3;
         }
         articleMod += `; }`;
         articleFed += `; }`;
-        return commentFed + articleFed + commentMod + articleMod;
+        articleHome += `; }`;
+        return commentFed + articleFed + commentMod + articleMod + commentHome + articleHome;
     }
 
     // These 2 functions (startup, shutdown) support init and deinit.
@@ -149,6 +160,15 @@
                 startup();
             }
         });
+        settingsPickerHome = kmoAddColorDropper(settingHeader, 'Home Color', settingsHome, 'Color for home content');
+        settingsPickerHome.addEventListener("change", () => {
+            GM_setValue(settingPrefix + 'home', settingsPickerHome.value);
+            settingsHome = settingsPickerHome.value;
+            if (settingsEnabled) {
+                injectedCss.remove();
+                startup();
+            }
+        });
         settingsPickerFed = kmoAddColorDropper(settingHeader, 'Federated Color', settingsFed, 'Color for federated content.');
         settingsPickerFed.addEventListener("change", () => {
             GM_setValue(settingPrefix + 'fed', settingsPickerFed.value);
@@ -174,11 +194,13 @@
     let settingsEnabled = GM_getValue(settingPrefix + 'enabled', true);
     let settingsFed = GM_getValue(settingPrefix + 'fed', '#009bff');
     let settingsMod = GM_getValue(settingPrefix + 'mod', '#ff0000');
+    let settingsHome = GM_getValue(settingPrefix + 'home', '#00FF64');
     let settingArticleSide = GM_getValue(settingPrefix + 'articleSide', 'right');
     let settingsEnabledToggle;
     let settingsArticleSideDropdown;
     let settingsPickerFed;
     let settingsPickerMod;
+    let settingsPickerHome;
     let injectedCss;
 
     // Wait for the page to finish loading before doing the real work.
@@ -197,6 +219,8 @@
                 article.classList.toggle('data-moderated');
             } else if (hostname !== window.location.hostname) {
                 article.classList.toggle('data-federated');
+            } else {
+                article.classList.toggle('data-home');
             }
         });
 
@@ -210,6 +234,8 @@
                     comment.classList.toggle('data-moderated');
                 } else if (userHostname !== window.location.hostname) {
                     comment.classList.toggle('data-federated');
+                } else {
+                    comment.classList.toggle('data-home');
                 }
             }
         });
