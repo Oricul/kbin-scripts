@@ -361,8 +361,13 @@
         });
     }
     function createSettings() {
-        let license = (GM_info).script.header.split('\n').find(header => header.includes('license'));
-        license = license.replace('//','').replace('@license','').trim();
+        let license = (GM_info).script;
+        if (license.license) {
+            license = license.license;
+        } else {
+            license = (GM_info).script.header.split('\n').find(header => header.includes('license'));
+            license = license.replace('//', '').replace('@license', '').trim();
+        }
         const settingHeader = kmoAddHeader('kbin-code-highlighting', { author: (GM_info).script.author, version: (GM_info).script.version, license: license, url: 'https://github.com/Oricul/kbin-scripts/' });
         settingsToggle = kmoAddToggle(settingHeader, 'Enabled', settingsEnabled, 'Toggle kbin-code-highlighting on or off.');
         settingsToggle.addEventListener("click", () => {
@@ -382,9 +387,12 @@
         cssDropdown.addEventListener("change", () => {
             const newStyle = kmoGetDropDown(cssDropdown);
             const newStyleUrl = (styles.find(style => style.name === newStyle)).url;
-            injectedCss.remove();
             GM_setValue(settingPrefix + 'css', newStyle);
-            setCss(newStyleUrl);
+            css = newStyleUrl;
+            if (settingsEnabled) {
+                injectedCss.remove();
+                setCss(newStyleUrl);
+            }
         });
     }
     // Load settings

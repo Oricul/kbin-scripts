@@ -26,7 +26,8 @@
     // List of strictly moderated instance domains.
     // TODO: Migrate this to an external list so you don't update script every time something lands on here.
     const hasStrictModerationRules = [
-        'beehaw.org'
+        'beehaw.org',
+        'lemmy.ml'
     ];
 
     // Returns true if in moderation list.
@@ -131,8 +132,13 @@
 
     // Creates the setting panel.
     function createSettings() {
-        let license = (GM_info).script.header.split('\n').find(header => header.includes('license'));
-        license = license.replace('//', '').replace('@license', '').trim();
+        let license = (GM_info).script;
+        if (license.license) {
+            license = license.license;
+        } else {
+            license = (GM_info).script.header.split('\n').find(header => header.includes('license'));
+            license = license.replace('//', '').replace('@license', '').trim();
+        }
         const settingHeader = kmoAddHeader('kbin-federation-awareness', { author: (GM_info).script.author, version: (GM_info).script.version, license: license, url: 'https://github.com/Oricul/kbin-scripts/' });
         settingsEnabledToggle = kmoAddToggle(settingHeader, 'Enabled', settingsEnabled, 'Toggle kbin-federation-awareness on or off.');
         settingsEnabledToggle.addEventListener("click", () => {
