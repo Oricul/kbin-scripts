@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         kbin-federation-awareness
 // @namespace    https://github.com/Oricul
-// @version      0.2.1
+// @version      0.2.2
 // @description  Adds border to articles and comments based on moderation or federation.
 // @author       0ri
 // @match        https://sacredori.net/*
