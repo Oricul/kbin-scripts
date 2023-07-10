@@ -5,6 +5,7 @@
 // @description  Use HLJS to add code highlighting to kbin. Hopefully adds some legibility as well.
 // @author       0rito
 // @license      MIT
+// @match        https://sacredori.net/*
 // @match        https://kbin.social/*
 // @match        https://fedia.io/*
 // @match        https://karab.in/*

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         kbin-federation-awareness
 // @namespace    https://github.com/Oricul
-// @version      0.2.2
+// @version      0.2.3
 // @description  Adds border to articles and comments based on moderation or federation.
 // @author       0ri
 // @match        https://sacredori.net/*
@@ -13,6 +13,8 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @license      MIT
+// @downloadURL  https://github.com/Oricul/kbin-scripts/raw/main/kbin-federation-awareness.user.js
+// @updateURL    https://github.com/Oricul/kbin-scripts/raw/main/kbin-federation-awareness.user.js
 // ==/UserScript==
 
 (function() {
@@ -123,11 +125,69 @@
 
     // These 2 functions (startup, shutdown) support init and deinit.
     function startup() {
+        initClasses();
         injectedCss = GM_addStyle(getCss());
+        // Support for infinite scrolling.
+        // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+        const targetNode = document.getElementById('content').children[0];
+        const config = { childList: true };
+
+        const callback = (mutationList, observer) => {
+            for (const mutation of mutationList) {
+                if (mutation.type === 'childList') {
+                    initClasses();
+                }
+            }
+        }
+        observer = new MutationObserver(callback);
+        observer.observe(targetNode, config);
     }
 
     function shutdown() {
         injectedCss.remove();
+        observer.disconnect();
+    }
+
+    function restart() {
+        shutdown();
+        startup();
+    }
+
+    function initClasses() {
+        const classList = ['data-moderated', 'data-federated', 'data-home'];
+        // Find all articles, determine their status, toggle appropriate class.
+        document.querySelectorAll('#content article.entry').forEach(function(article) {
+            if (!(article.classList.value.split(' ').some(r=> classList.indexOf(r) >= 0))) {
+                var hostname = new URL(article.querySelector('footer menu .dropdown li:nth-child(4) a').href).hostname;
+                article.setAttribute('data-hostname', hostname);
+
+                if (isStrictlyModerated(hostname)) {
+                    article.classList.toggle('data-moderated');
+                } else if (hostname !== window.location.hostname) {
+                    article.classList.toggle('data-federated');
+                } else {
+                    article.classList.toggle('data-home');
+                }
+            }
+        });
+
+        // Find all comments, determine their status, toggle appropriate class.
+        document.querySelectorAll('.comments blockquote.entry-comment').forEach(function(comment) {
+            if (!(comment.classList.value.split(' ').some(r=> classList.indexOf(r) >= 0))) {
+                var userInfo = comment.querySelector('header a:nth-child(1)');
+                if (userInfo) {
+                    var userHostname = userInfo.title.split('@').reverse()[0];
+
+                    if (isStrictlyModerated(userHostname)) {
+                        comment.classList.toggle('data-moderated');
+                    } else if (userHostname !== window.location.hostname) {
+                        comment.classList.toggle('data-federated');
+                    } else {
+                        comment.classList.toggle('data-home');
+                    }
+                }
+            }
+        });
     }
 
     // Creates the setting panel.
@@ -162,8 +222,7 @@
             settingArticleSide = newStyle;
             GM_setValue(settingPrefix + 'articleSide', newStyle);
             if (settingsEnabled) {
-                injectedCss.remove();
-                startup();
+                restart();
             }
         });
         settingsPickerHome = kmoAddColorDropper(settingHeader, 'Home Color', settingsHome, 'Color for home content');
@@ -171,8 +230,7 @@
             GM_setValue(settingPrefix + 'home', settingsPickerHome.value);
             settingsHome = settingsPickerHome.value;
             if (settingsEnabled) {
-                injectedCss.remove();
-                startup();
+                restart();
             }
         });
         settingsPickerFed = kmoAddColorDropper(settingHeader, 'Federated Color', settingsFed, 'Color for federated content.');
@@ -180,8 +238,7 @@
             GM_setValue(settingPrefix + 'fed', settingsPickerFed.value);
             settingsFed = settingsPickerFed.value;
             if (settingsEnabled) {
-                injectedCss.remove();
-                startup();
+                restart();
             }
         });
         settingsPickerMod = kmoAddColorDropper(settingHeader, 'Moderated Color', settingsMod, 'Color for moderated content.');
@@ -189,8 +246,7 @@
             GM_setValue(settingPrefix + 'mod', settingsPickerMod.value);
             settingsMod = settingsPickerMod.value;
             if (settingsEnabled) {
-                injectedCss.remove();
-                startup();
+                restart();
             }
         });
     }
@@ -208,6 +264,7 @@
     let settingsPickerMod;
     let settingsPickerHome;
     let injectedCss;
+    let observer;
 
     // Wait for the page to finish loading before doing the real work.
     window.addEventListener("load", function () {
@@ -215,36 +272,6 @@
         if (settingsEnabled) {
             startup();
         }
-
-        // Find all articles, determine their status, toggle appropriate class.
-        document.querySelectorAll('#content article.entry').forEach(function(article) {
-            var hostname = new URL(article.querySelector('footer menu .dropdown li:nth-child(4) a').href).hostname;
-            article.setAttribute('data-hostname', hostname);
-
-            if (isStrictlyModerated(hostname)) {
-                article.classList.toggle('data-moderated');
-            } else if (hostname !== window.location.hostname) {
-                article.classList.toggle('data-federated');
-            } else {
-                article.classList.toggle('data-home');
-            }
-        });
-
-        // Find all comments, determine their status, toggle appropriate class.
-        document.querySelectorAll('.comments blockquote.entry-comment').forEach(function(comment) {
-            var userInfo = comment.querySelector('header a:nth-child(1)');
-            if (userInfo) {
-                var userHostname = userInfo.title.split('@').reverse()[0];
-
-                if (isStrictlyModerated(userHostname)) {
-                    comment.classList.toggle('data-moderated');
-                } else if (userHostname !== window.location.hostname) {
-                    comment.classList.toggle('data-federated');
-                } else {
-                    comment.classList.toggle('data-home');
-                }
-            }
-        });
 
         // Inject settings panel.
         createSettings();
