@@ -1,6 +1,6 @@
 /*
     Name:           kbin-mod-options
-    Version:        0.2.4
+    Version:        0.3.0
     Description:    Standardize kbin mod options for ease-of-use.
     Author:         0rito
     License:        MIT
@@ -107,6 +107,36 @@ ourSection.className = 'kmo-settings-list';
 document.querySelector('#settings.section').appendChild(ourSection);
 const settingsList = ourSection;
 
+function kmoCreateObserver({funcToCall, nodeType = 'id', nodeToWatch = 'content', watchSubtree = false} = {}) {
+    if (typeof funcToCall === 'undefined') {
+        throw new Error('kmoCreateObserver - funcToCall is undefined');
+    }
+    let targetNode;
+    if (nodeType === 'id') {
+        targetNode = document.getElementById(nodeToWatch);
+        if (nodeToWatch === 'content') {
+            targetNode = targetNode.children[0];
+        }
+    } else {
+        targetNode = document.getElementsByClassName(nodeToWatch);
+    }
+    let config = { childList: true };
+    if (watchSubtree) {
+        config.subtree = true;
+    }
+
+    const callback = (mutationList, observer) => {
+        for (const mutation of mutationList) {
+            if (mutation.type === 'childList') {
+                funcToCall();
+            }
+        }
+    }
+    let observer = new MutationObserver(callback);
+    observer.observe(targetNode, config);
+    return observer;
+}
+
 function kmoAddHeader(title, info = {}) {
     if (typeof title === 'undefined') {
         throw new Error('kmoAddHeader - title is undefined')
@@ -118,7 +148,7 @@ function kmoAddHeader(title, info = {}) {
     if (Object.keys(info).length > 0) {
         const infoIcon = document.createElement('i');
         infoIcon.className = 'fa-solid fa-circle-info';
-        infoIconStyle = 'margin-left: 10px; '
+        let infoIconStyle = 'margin-left: 10px; '
         if (typeof info.color !== 'undefined') {
             infoIconStyle += "color: " + info.color + "; ";
         } else {
