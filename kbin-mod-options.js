@@ -1,14 +1,13 @@
 /*
     Name:           kbin-mod-options
-    Version:        0.2.3
-    Description:    Attempt at standardizing mod options.
+    Version:        0.2.4
+    Description:    Standardize kbin mod options for ease-of-use.
     Author:         0rito
     License:        MIT
 */
 const kmoStyles = `
     .switch {
         position: relative;
-        //display: inline-block;
         display: block;
         width: 36px;
         height: 24px;
@@ -28,6 +27,7 @@ const kmoStyles = `
         background-color: var(--kbin-bg);
         --webkit-transition: .4s;
         transition: .4s;
+        border-radius: var(--kbin-rounded-edges-radius);
     }
 
     .slider:before {
@@ -40,6 +40,7 @@ const kmoStyles = `
         background-color: var(--kbin-meta-text-color);
         --webkit-transition: .4s;
         transition: .4s;
+        border-radius: var(--kbin-rounded-edges-radius);
     }
 
     input:checked + .slider {
@@ -57,8 +58,7 @@ const kmoStyles = `
     }
 
     .kmo-settings-row.expanded {
-        /*display: block !important;*/
-        display: flex;
+        display: block !important;
     }
 
     .kmo-settings-header {
@@ -67,18 +67,24 @@ const kmoStyles = `
         margin-bottom: 0.5em;
     }
 
-    .kmo-settings-row .row {
+    .kmo-settings-row {
         display: none;
         animation: showKmoSettingsRow .25s ease-in-out;
-        justify-content: space-between;
+    }
 
-        div {
-            display: inline;
-            justify-content: flex-start;
-            align-items: stretch;
-            flex: 0 1 auto;
-            min-height: auto;
-        }
+    /*.kmo-settings-row.expanded .row {
+        justify-content: space-between !important;
+    }*/
+
+    .kmo-settings-row.expanded div.row {
+        justify-content: space-between;
+        display:flex;
+    }
+
+    .kmo-settings-row.expanded .row div {
+        color: var(--kbin-meta-text-color);
+        display: inline-block;
+        margin-bottom: .5rem;
     }
 
     @keyframes showKmoSettingsRow {
