@@ -117,8 +117,10 @@ function kmoCreateObserver({funcToCall, nodeType = 'id', nodeToWatch = 'content'
         if (nodeToWatch === 'content') {
             targetNode = targetNode.children[0];
         }
-    } else {
+    } else if (nodeType === 'class') {
         targetNode = document.getElementsByClassName(nodeToWatch);
+    } else {
+        targetNode = document.querySelectorAll(nodeToWatch);
     }
     let config = { childList: true };
     if (watchSubtree) {
