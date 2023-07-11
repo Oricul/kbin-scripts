@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         kbin-code-highlighting
 // @namespace    https://github.com/Oricul
-// @version      0.5.0
+// @version      0.5.1
 // @description  Use HLJS to add code highlighting to kbin. Hopefully adds some legibility as well.
 // @author       0rito
 // @license      MIT
@@ -267,12 +267,13 @@
         // Support for infinite scrolling.
         // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
         const targetNode = document.getElementById('content').children[0];
-        const config = { childList: true };
+        const config = { childList: true, subtree: true };
 
         const callback = (mutationList, observer) => {
             for (const mutation of mutationList) {
                 if (mutation.type === 'childList') {
                     addHeaders('code');
+                    //hljs.highlightAll();
                 }
             }
         }
@@ -369,6 +370,9 @@
             if (parent.nodeName !== 'PRE') {
                 const placement = item.nextSibling;
                 addPreTag(parent, placement, item);
+            }
+            if (!(item.classList.contains('hljs'))) {
+                hljs.highlightElement(item);
             }
             addTags(item);
         });
