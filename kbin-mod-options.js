@@ -57,7 +57,8 @@ const kmoStyles = `
     }
 
     .kmo-settings-row.expanded {
-        display: block !important;
+        /*display: block !important;*/
+        display: flex;
     }
 
     .kmo-settings-header {
@@ -69,6 +70,15 @@ const kmoStyles = `
     .kmo-settings-row {
         display: none;
         animation: showKmoSettingsRow .25s ease-in-out;
+        justify-content: space-between;
+
+        div {
+            display: inline;
+            justify-content: flex-start;
+            align-items: stretch;
+            flex: 0 1 auto;
+            min-height: auto;
+        }
     }
 
     @keyframes showKmoSettingsRow {
