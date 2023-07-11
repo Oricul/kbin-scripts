@@ -67,7 +67,7 @@ const kmoStyles = `
         margin-bottom: 0.5em;
     }
 
-    .kmo-settings-row {
+    .kmo-settings-row .row {
         display: none;
         animation: showKmoSettingsRow .25s ease-in-out;
         justify-content: space-between;
