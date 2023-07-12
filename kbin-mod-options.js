@@ -1,6 +1,6 @@
 /*
     Name:           kbin-mod-options
-    Version:        0.4.0
+    Version:        0.4.1
     Description:    Standardize kbin mod options for ease-of-use.
     Author:         0rito
     License:        MIT
@@ -72,9 +72,13 @@ const kmoStyles = `
         animation: showKmoSettingsRow .25s ease-in-out;
     }
 
-    /*.kmo-settings-row.expanded .row {
-        justify-content: space-between !important;
-    }*/
+    .kmo-settings-row .row:hover {
+        background-color: var(--kbin-button-primary-hover-bg) !important;
+    }
+
+    .kmo-settings-row .row {
+        max-height: 20px;
+    }
 
     .kmo-settings-row.expanded div.row {
         justify-content: space-between;
@@ -233,7 +237,7 @@ function kmoToggleSettings(toggle, settingDiv) {
 function kmo_createSettingRow(title = '') {
     const settingDiv = document.createElement('div');
     settingDiv.className = 'row';
-    settingDiv.style = 'align-items: center;';
+    settingDiv.style = 'align-items: center; max-height: 20px;';
     if (title.length > 0) {
         settingDiv.title = title;
     }
@@ -242,9 +246,11 @@ function kmo_createSettingRow(title = '') {
 
 function kmo_createSettingName(name) {
     const settingSpan = document.createElement('span');
-    settingSpan.style = 'margin-left: 10px;';
+    settingSpan.style = 'margin-left: 10px; vertical-align: middle;';
     settingSpan.textContent = name;
-    return settingSpan;
+    const spanDiv = document.createElement('div');
+    spanDiv.appendChild(settingSpan);
+    return spanDiv;
 }
 
 function kmo_createDropDownOption(name, value, selected = false) {
@@ -313,17 +319,20 @@ function kmoAddDropDown(settingDiv, settingName, options, currentValue, descript
     }
     const thisSettingDiv = kmo_createSettingRow(description);
     const settingSpan = kmo_createSettingName(settingName);
+    settingSpan.style.verticalAlign = 'middle';
     const dropDown = document.createElement('select');
     const fixName = settingName.replace(' ', '-');
     dropDown.name = fixName;
     dropDown.className = fixName + '-selector';
-    dropDown.style = 'border: none; padding: 0px 10px; border-radius: 5px;';
+    dropDown.style = 'border: none; padding: 0px 10px; border-radius: 5px; vertical-align: middle; display: inline-block;';
     options.forEach(option => {
         const optionEntry = kmo_createDropDownOption(option.name, option.value, ((currentValue === option.value) ? true : false));
         dropDown.appendChild(optionEntry);
     });
     thisSettingDiv.appendChild(settingSpan);
-    thisSettingDiv.appendChild(dropDown);
+    const dropDownDiv = document.createElement('div');
+    dropDownDiv.appendChild(dropDown);
+    thisSettingDiv.appendChild(dropDownDiv);
     settingDiv.appendChild(thisSettingDiv);
     settingsList.appendChild(settingDiv);
     return dropDown;
@@ -367,6 +376,7 @@ function kmoAddColorDropper(settingDiv, settingName, currentColor, description =
     const thisSettingDiv = kmo_createSettingRow(description);
     const settingSpan = kmo_createSettingName(settingName);
     const colorDropper = document.createElement('input');
+    colorDropper.style.maxHeight = '20px';
     colorDropper.type = 'color';
     if (currentColor.length === 4) {
         let fixedCurrentColor = '';
@@ -405,13 +415,11 @@ function kmoAddSlider(settingDiv, settingName, currentValue, minValue, maxValue,
         throw new Error('kmoAddSlider - maxValue is undefined');
     }
     const thisSettingDiv = kmo_createSettingRow(description);
-    const settingSpanDiv = document.createElement('div');
     const settingSpan = kmo_createSettingName(settingName);
     const sliderDiv = document.createElement('div');
     const slider = document.createElement('input');
     const sliderValue = document.createElement('label');
     const pId = settingName.replace(' ', '') + 'Value';
-    thisSettingDiv.style.maxHeight = '20px';
     sliderValue.style.display = 'inline-block';
     sliderValue.style.verticalAlign = 'middle';
     sliderValue.style.marginRight = '10px';
@@ -425,8 +433,7 @@ function kmoAddSlider(settingDiv, settingName, currentValue, minValue, maxValue,
     slider.min = minValue;
     slider.max = maxValue;
     slider.value = currentValue;
-    settingSpanDiv.appendChild(settingSpan);
-    thisSettingDiv.appendChild(settingSpanDiv);
+    thisSettingDiv.appendChild(settingSpan);
     sliderDiv.appendChild(sliderValue);
     sliderDiv.appendChild(slider);
     thisSettingDiv.appendChild(sliderDiv);

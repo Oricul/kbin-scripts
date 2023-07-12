@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         kbin-federation-awareness
 // @namespace    https://github.com/Oricul
-// @version      0.2.4
+// @version      0.2.5
 // @description  Adds border to articles and comments based on moderation or federation.
 // @author       0ri
 // @match        https://sacredori.net/*
@@ -123,9 +123,12 @@
             articleHome += `; }`;
             return commentFed + articleFed + commentMod + articleMod + commentHome + articleHome;
         } else if (settingStyle === 'bubble') {
-            let fedStyle = ` .comment .data-federated, article .data-federated { display: inline-block; width: 10px; height: 10px; border-radius: 10px; box-shadow: `;
-            let modStyle = ` .comment .data-moderated, article .data-moderated { display: inline-block; width: 10px; height: 10px; border-radius: 10px; box-shadow: `;
-            let homeStyle = ` .comment .data-home, article .data-home { display: inline-block; width: 10px; height: 10px; border-radius: 10px; box-shadow: `;
+            // Scale 1-10; Default 5 (i.e., 50%); 10 is 50% of 20. 20 * (x * 0.1)
+            const defaultScale = 20;
+            const setScale = 20 * (settingScale * 0.1);
+            let fedStyle = ` .comment .data-federated, article .data-federated { display: inline-block; width: ` + setScale + `px; height: ` + setScale + `px; border-radius: 10px; box-shadow: `;
+            let modStyle = ` .comment .data-moderated, article .data-moderated { display: inline-block; width: ` + setScale + `px; height: ` + setScale + `px; border-radius: 10px; box-shadow: `;
+            let homeStyle = ` .comment .data-home, article .data-home { display: inline-block; width: ` + setScale + `px; height: ` + setScale + `px; border-radius: 10px; box-shadow: `;
             modStyle += `0 0 3px 2px ` + modColor0 + `; background-color: ` + modColor0 + `; margin-right: 4px; }`;
             fedStyle += `0 0 3px 2px ` + fedColor0 + `; background-color: ` + fedColor0 + `; margin-right: 4px; }`;
             homeStyle += `0 0 3px 2px ` + homeColor0 + `; background-color: ` + homeColor0 + `; margin-right: 4px; }`;
@@ -229,17 +232,17 @@
             GM_setValue(settingPrefix + 'enabled', enabledState);
             if (enabledState === true) {
                 startup();
-                settingsDisplayDropdown.parentNode.style.display = '';
+                settingsDisplayDropdown.parentNode.parentNode.style.display = '';
                 if (settingStyle === 'border') {
-                    settingsArticleSideDropdown.parentNode.style.display = '';
+                    settingsArticleSideDropdown.parentNode.parentNode.style.display = '';
                 }
                 settingsPickerHome.parentNode.style.display = '';
                 settingsPickerFed.parentNode.style.display = '';
                 settingsPickerMod.parentNode.style.display = '';
             } else {
                 shutdown();
-                settingsDisplayDropdown.parentNode.style.display = 'none';
-                settingsArticleSideDropdown.parentNode.style.display = 'none';
+                settingsDisplayDropdown.parentNode.parentNode.style.display = 'none';
+                settingsArticleSideDropdown.parentNode.parentNode.style.display = 'none';
                 settingsPickerHome.parentNode.style.display = 'none';
                 settingsPickerFed.parentNode.style.display = 'none';
                 settingsPickerMod.parentNode.style.display = 'none';
@@ -255,9 +258,11 @@
             settingStyle = newStyle;
             GM_setValue(settingPrefix + 'style', newStyle);
             if (settingStyle === 'border') {
-                settingsArticleSideDropdown.parentNode.style.display = '';
+                settingsArticleSideDropdown.parentNode.parentNode.style.display = '';
+                settingsScaleSlider.parentNode.parentNode.style.display = 'none';
             } else {
-                settingsArticleSideDropdown.parentNode.style.display = 'none';
+                settingsArticleSideDropdown.parentNode.parentNode.style.display = 'none';
+                settingsScaleSlider.parentNode.parentNode.style.display = '';
             }
             if (settingsEnabled) {
                 restart();
@@ -270,12 +275,23 @@
         ];
         settingsArticleSideDropdown = kmoAddDropDown(settingHeader, 'Article Side', articleStyleOptions, settingArticleSide, 'Changes which side of articles are highlighted.');
         if (settingStyle !== 'border') {
-            settingsArticleSideDropdown.parentNode.style.display = 'none';
+            settingsArticleSideDropdown.parentNode.parentNode.style.display = 'none';
         }
         settingsArticleSideDropdown.addEventListener("change", () => {
             const newStyle = kmoGetDropDown(settingsArticleSideDropdown);
             settingArticleSide = newStyle;
             GM_setValue(settingPrefix + 'articleSide', newStyle);
+            if (settingsEnabled) {
+                restart();
+            }
+        });
+        settingsScaleSlider = kmoAddSlider(settingHeader, 'Bubble Scale', settingScale, 1, 10, 'Scale the awareness bubble.');
+        if (settingStyle !== 'bubble') {
+            settingsScaleSlider.parentNode.parentNode.style.display = 'none';
+        }
+        settingsScaleSlider.addEventListener("change", () => {
+            settingScale = settingsScaleSlider.value;
+            GM_setValue(settingPrefix + 'scale', settingScale);
             if (settingsEnabled) {
                 restart();
             }
@@ -315,6 +331,8 @@
     let settingsHome = GM_getValue(settingPrefix + 'home', '#00FF64');
     let settingArticleSide = GM_getValue(settingPrefix + 'articleSide', 'right');
     let settingStyle = GM_getValue(settingPrefix + 'style', 'bubble');
+    let settingScale = GM_getValue(settingPrefix + 'scale', 5);
+    let settingsScaleSlider;
     let settingsEnabledToggle;
     let settingsArticleSideDropdown;
     let settingsDisplayDropdown;
