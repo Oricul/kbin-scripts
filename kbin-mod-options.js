@@ -1,6 +1,6 @@
 /*
     Name:           kbin-mod-options
-    Version:        0.3.0
+    Version:        0.4.0
     Description:    Standardize kbin mod options for ease-of-use.
     Author:         0rito
     License:        MIT
@@ -96,6 +96,35 @@ const kmoStyles = `
             opacity: 1;
             transform: translateY(0);
         }
+    }
+
+    .kmo-settings-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+        height: 8px;
+        outline: none;
+    }
+
+    .kmo-settings-slider:hover {
+        opacity: 1;
+        cursor: pointer;
+    }
+
+    .kmo-settings-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 10px;
+        width: 10px;
+    }
+
+    .kmo-settings-slider::-moz-range-thumb {
+        appearance: none;
+        height: 10px;
+        width: 10px;
     }
 `
 const styleSheet = document.createElement('style');
@@ -357,4 +386,51 @@ function kmoAddColorDropper(settingDiv, settingName, currentColor, description =
     settingDiv.appendChild(thisSettingDiv);
     settingsList.appendChild(settingDiv);
     return colorDropper;
+}
+
+function kmoAddSlider(settingDiv, settingName, currentValue, minValue, maxValue, description = '') {
+    if (typeof settingDiv === 'undefined') {
+        throw new Error('kmoAddSlider - settingDiv is undefined');
+    }
+    if (typeof settingName === 'undefined') {
+        throw new Error('kmoAddSlider - settingName is undefined');
+    }
+    if (typeof currentValue === 'undefined') {
+        throw new Error('kmoAddSlider - currentValue is undefined');
+    }
+    if (typeof minValue === 'undefined') {
+        throw new Error('kmoAddSlider - minValue is undefined');
+    }
+    if (typeof maxValue === 'undefined') {
+        throw new Error('kmoAddSlider - maxValue is undefined');
+    }
+    const thisSettingDiv = kmo_createSettingRow(description);
+    const settingSpanDiv = document.createElement('div');
+    const settingSpan = kmo_createSettingName(settingName);
+    const sliderDiv = document.createElement('div');
+    const slider = document.createElement('input');
+    const sliderValue = document.createElement('label');
+    const pId = settingName.replace(' ', '') + 'Value';
+    thisSettingDiv.style.maxHeight = '20px';
+    sliderValue.style.display = 'inline-block';
+    sliderValue.style.verticalAlign = 'middle';
+    sliderValue.style.marginRight = '10px';
+    sliderValue.id = pId;
+    sliderValue.for = pId;
+    sliderValue.innerText = currentValue;
+    slider.setAttribute('oninput', pId + '.innerText = this.value');
+    slider.style.verticalAlign = 'middle';
+    slider.className = 'kmo-settings-slider';
+    slider.type = 'range';
+    slider.min = minValue;
+    slider.max = maxValue;
+    slider.value = currentValue;
+    settingSpanDiv.appendChild(settingSpan);
+    thisSettingDiv.appendChild(settingSpanDiv);
+    sliderDiv.appendChild(sliderValue);
+    sliderDiv.appendChild(slider);
+    thisSettingDiv.appendChild(sliderDiv);
+    settingDiv.appendChild(thisSettingDiv);
+    settingsList.appendChild(settingDiv);
+    return slider;
 }

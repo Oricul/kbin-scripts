@@ -22,6 +22,8 @@ The purpose of this script is to allow mods to more easily implement settings.
 
 ### 0.3.0 - New feature: Observers!
 
+### 0.4.0 - New feature: Sliders!
+
 ## Functionality
 
 ### Header
@@ -224,6 +226,40 @@ function shutdown() {
   mySubObserver.disconnect();
 }
 ```
+
+### Slider
+
+```javascript
+kmoAddHeader(<headerChildDiv>, <settingLabel>, <currentValue>, <minValue>, <maxValue>[, <settingDescription>]);
+```
+
+- headerChildDiv - required
+- settingLabel - required
+- currentValue - required
+- minValue - required
+- maxValue - required
+- settingDescription - optional
+
+#### Example
+
+```javascript
+// Create slider const
+const slider = kmoAddSlider(
+  settingHeader,
+  "Slider Name",
+  5,
+  1,
+  10,
+  "This is an example slider."
+);
+// Listen for slider to change value.
+slider.addEventListener("change", () => {
+  // Log new value out to console.
+  console.log(slider.value);
+});
+```
+
+![Slider Example](https://files.catbox.moe/t5nx2x.gif)
 
 ## Usage
 
