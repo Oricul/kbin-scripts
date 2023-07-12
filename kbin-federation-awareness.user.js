@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         kbin-federation-awareness
 // @namespace    https://github.com/Oricul
-// @version      0.2.3
+// @version      0.2.4
 // @description  Adds border to articles and comments based on moderation or federation.
 // @author       0ri
 // @match        https://sacredori.net/*
@@ -81,12 +81,6 @@
     // Generates CSS to inject.
     // NOTE: Does not apply 'side' to comments as the left side of comments already has border effects.
     function getCss() {
-        let commentFed = ` .comment.data-federated {  box-shadow: `;
-        let articleFed = ` article.data-federated {  box-shadow: `;
-        let commentMod = ` .comment.data-moderated {  box-shadow: `;
-        let articleMod = ` article.data-moderated {  box-shadow: `;
-        let commentHome = ` .comment.data-home {  box-shadow: `;
-        let articleHome = ` article.data-home {  box-shadow: `;
         let fedColor0 = settingsFed;
         let fedColor1 = subtractColor(fedColor0, 50);
         let fedColor2 = subtractColor(fedColor1, 50);
@@ -99,28 +93,44 @@
         let homeColor1 = subtractColor(homeColor0, 50);
         let homeColor2 = subtractColor(homeColor1, 50);
         let homeColor3 = subtractColor(homeColor2, 50);
-        commentMod += `1px 0 0 ` + modColor0 + `, 2px 0 0 ` + modColor0 + `, 3px 0 0 ` + modColor1 + `, 4px 0 0 ` + modColor2 + `, 5px 0 0 ` + modColor3 + `; }`;
-        commentFed += `1px 0 0 ` + fedColor0 + `, 2px 0 0 ` + fedColor0 + `, 3px 0 0 ` + fedColor1 + `, 4px 0 0 ` + fedColor2 + `, 5px 0 0 ` + fedColor3 + `; }`;
-        commentHome += `1px 0 0 ` + homeColor0 + `, 2px 0 0 ` + homeColor0 + `, 3px 0 0 ` + homeColor1 + `, 4px 0 0 ` + homeColor2 + `, 5px 0 0 ` + homeColor3 + `; }`;
-        if (settingArticleSide === 'left' || settingArticleSide === 'both') {
-            articleMod += `-1px 0 0 ` + modColor0 + `, -2px 0 0 ` + modColor0 + `, -3px 0 0 ` + modColor1 + `, -4px 0 0 ` + modColor2 + `, -5px 0 0 ` + modColor3;
-            articleFed += `-1px 0 0 ` + fedColor0 + `, -2px 0 0 ` + fedColor0 + `, -3px 0 0 ` + fedColor1 + `, -4px 0 0 ` + fedColor2 + `, -5px 0 0 ` + fedColor3;
-            articleHome += `-1px 0 0 ` + homeColor0 + `, -2px 0 0 ` + homeColor0 + `, -3px 0 0 ` + homeColor1 + `, -4px 0 0 ` + homeColor2 + `, -5px 0 0 ` + homeColor3;
-        }
-        if (settingArticleSide === 'right' || settingArticleSide === 'both') {
-            if (settingArticleSide === 'both') {
-                articleMod += `, `;
-                articleFed += `, `;
-                articleHome += `, `;
+        if (settingStyle === 'border') {
+            let commentFed = ` .comment.data-federated {  box-shadow: `;
+            let articleFed = ` article.data-federated {  box-shadow: `;
+            let commentMod = ` .comment.data-moderated {  box-shadow: `;
+            let articleMod = ` article.data-moderated {  box-shadow: `;
+            let commentHome = ` .comment.data-home {  box-shadow: `;
+            let articleHome = ` article.data-home {  box-shadow: `;
+            commentMod += `1px 0 0 ` + modColor0 + `, 2px 0 0 ` + modColor0 + `, 3px 0 0 ` + modColor1 + `, 4px 0 0 ` + modColor2 + `, 5px 0 0 ` + modColor3 + `; }`;
+            commentFed += `1px 0 0 ` + fedColor0 + `, 2px 0 0 ` + fedColor0 + `, 3px 0 0 ` + fedColor1 + `, 4px 0 0 ` + fedColor2 + `, 5px 0 0 ` + fedColor3 + `; }`;
+            commentHome += `1px 0 0 ` + homeColor0 + `, 2px 0 0 ` + homeColor0 + `, 3px 0 0 ` + homeColor1 + `, 4px 0 0 ` + homeColor2 + `, 5px 0 0 ` + homeColor3 + `; }`;
+            if (settingArticleSide === 'left' || settingArticleSide === 'both') {
+                articleMod += `-1px 0 0 ` + modColor0 + `, -2px 0 0 ` + modColor0 + `, -3px 0 0 ` + modColor1 + `, -4px 0 0 ` + modColor2 + `, -5px 0 0 ` + modColor3;
+                articleFed += `-1px 0 0 ` + fedColor0 + `, -2px 0 0 ` + fedColor0 + `, -3px 0 0 ` + fedColor1 + `, -4px 0 0 ` + fedColor2 + `, -5px 0 0 ` + fedColor3;
+                articleHome += `-1px 0 0 ` + homeColor0 + `, -2px 0 0 ` + homeColor0 + `, -3px 0 0 ` + homeColor1 + `, -4px 0 0 ` + homeColor2 + `, -5px 0 0 ` + homeColor3;
             }
-            articleMod += `1px 0 0 ` + modColor0 + `, 2px 0 0 ` + modColor0 + `, 3px 0 0 ` + modColor1 + `, 4px 0 0 ` + modColor2 + `, 5px 0 0 ` + modColor3;
-            articleFed += `1px 0 0 ` + fedColor0 + `, 2px 0 0 ` + fedColor0 + `, 3px 0 0 ` + fedColor1 + `, 4px 0 0 ` + fedColor2 + `, 5px 0 0 ` + fedColor3;
-            articleHome += `1px 0 0 ` + homeColor0 + `, 2px 0 0 ` + homeColor0 + `, 3px 0 0 ` + homeColor1 + `, 4px 0 0 ` + homeColor2 + `, 5px 0 0 ` + homeColor3;
+            if (settingArticleSide === 'right' || settingArticleSide === 'both') {
+                if (settingArticleSide === 'both') {
+                    articleMod += `, `;
+                    articleFed += `, `;
+                    articleHome += `, `;
+                }
+                articleMod += `1px 0 0 ` + modColor0 + `, 2px 0 0 ` + modColor0 + `, 3px 0 0 ` + modColor1 + `, 4px 0 0 ` + modColor2 + `, 5px 0 0 ` + modColor3;
+                articleFed += `1px 0 0 ` + fedColor0 + `, 2px 0 0 ` + fedColor0 + `, 3px 0 0 ` + fedColor1 + `, 4px 0 0 ` + fedColor2 + `, 5px 0 0 ` + fedColor3;
+                articleHome += `1px 0 0 ` + homeColor0 + `, 2px 0 0 ` + homeColor0 + `, 3px 0 0 ` + homeColor1 + `, 4px 0 0 ` + homeColor2 + `, 5px 0 0 ` + homeColor3;
+            }
+            articleMod += `; }`;
+            articleFed += `; }`;
+            articleHome += `; }`;
+            return commentFed + articleFed + commentMod + articleMod + commentHome + articleHome;
+        } else if (settingStyle === 'bubble') {
+            let fedStyle = ` .comment .data-federated, article .data-federated { display: inline-block; width: 10px; height: 10px; border-radius: 10px; box-shadow: `;
+            let modStyle = ` .comment .data-moderated, article .data-moderated { display: inline-block; width: 10px; height: 10px; border-radius: 10px; box-shadow: `;
+            let homeStyle = ` .comment .data-home, article .data-home { display: inline-block; width: 10px; height: 10px; border-radius: 10px; box-shadow: `;
+            modStyle += `0 0 3px 2px ` + modColor0 + `; background-color: ` + modColor0 + `; margin-right: 4px; }`;
+            fedStyle += `0 0 3px 2px ` + fedColor0 + `; background-color: ` + fedColor0 + `; margin-right: 4px; }`;
+            homeStyle += `0 0 3px 2px ` + homeColor0 + `; background-color: ` + homeColor0 + `; margin-right: 4px; }`;
+            return modStyle + fedStyle + homeStyle;
         }
-        articleMod += `; }`;
-        articleFed += `; }`;
-        articleHome += `; }`;
-        return commentFed + articleFed + commentMod + articleMod + commentHome + articleHome;
     }
 
     // These 2 functions (startup, shutdown) support init and deinit.
@@ -130,7 +140,7 @@
         // Support for infinite scrolling.
         // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
         const targetNode = document.getElementById('content').children[0];
-        const config = { childList: true };
+        const config = { childList: true, subtree: true };
 
         const callback = (mutationList, observer) => {
             for (const mutation of mutationList) {
@@ -159,32 +169,44 @@
         document.querySelectorAll('#content article.entry').forEach(function(article) {
             if (!(article.classList.value.split(' ').some(r=> classList.indexOf(r) >= 0))) {
                 var hostname = new URL(article.querySelector('footer menu .dropdown li:nth-child(4) a').href).hostname;
+                let articleAside = article.querySelector('aside');
                 article.setAttribute('data-hostname', hostname);
+                let articleIndicator = document.createElement('div');
 
                 if (isStrictlyModerated(hostname)) {
                     article.classList.toggle('data-moderated');
+                    articleIndicator.classList.toggle('data-moderated');
                 } else if (hostname !== window.location.hostname) {
                     article.classList.toggle('data-federated');
+                    articleIndicator.classList.toggle('data-federated');
                 } else {
                     article.classList.toggle('data-home');
+                    articleIndicator.classList.toggle('data-home');
                 }
+                articleAside.prepend(articleIndicator);
             }
         });
 
         // Find all comments, determine their status, toggle appropriate class.
         document.querySelectorAll('.comments blockquote.entry-comment').forEach(function(comment) {
             if (!(comment.classList.value.split(' ').some(r=> classList.indexOf(r) >= 0))) {
-                var userInfo = comment.querySelector('header a:nth-child(1)');
+                let commentHeader = comment.querySelector('header');
+                const userInfo = commentHeader.querySelector('a.user-inline');
                 if (userInfo) {
-                    var userHostname = userInfo.title.split('@').reverse()[0];
+                    const userHostname = userInfo.title.split('@').reverse()[0];
+                    let commentIndicator = document.createElement('div');
 
                     if (isStrictlyModerated(userHostname)) {
                         comment.classList.toggle('data-moderated');
+                        commentIndicator.classList.toggle('data-moderated');
                     } else if (userHostname !== window.location.hostname) {
                         comment.classList.toggle('data-federated');
+                        commentIndicator.classList.toggle('data-federated');
                     } else {
                         comment.classList.toggle('data-home');
+                        commentIndicator.classList.toggle('data-home');
                     }
+                    commentHeader.prepend(commentIndicator);
                 }
             }
         });
@@ -207,16 +229,49 @@
             GM_setValue(settingPrefix + 'enabled', enabledState);
             if (enabledState === true) {
                 startup();
+                settingsDisplayDropdown.parentNode.style.display = '';
+                if (settingStyle === 'border') {
+                    settingsArticleSideDropdown.parentNode.style.display = '';
+                }
+                settingsPickerHome.parentNode.style.display = '';
+                settingsPickerFed.parentNode.style.display = '';
+                settingsPickerMod.parentNode.style.display = '';
             } else {
                 shutdown();
+                settingsDisplayDropdown.parentNode.style.display = 'none';
+                settingsArticleSideDropdown.parentNode.style.display = 'none';
+                settingsPickerHome.parentNode.style.display = 'none';
+                settingsPickerFed.parentNode.style.display = 'none';
+                settingsPickerMod.parentNode.style.display = 'none';
             }
         });
-        const styleOptions = [
+        const displayStyle = [
+            { name: 'Bubble', value: 'bubble' },
+            { name: 'Border', value: 'border' }
+        ];
+        settingsDisplayDropdown = kmoAddDropDown(settingHeader, 'Display Style', displayStyle, settingStyle, 'How federation is to be displayed');
+        settingsDisplayDropdown.addEventListener("change", () => {
+            const newStyle = kmoGetDropDown(settingsDisplayDropdown);
+            settingStyle = newStyle;
+            GM_setValue(settingPrefix + 'style', newStyle);
+            if (settingStyle === 'border') {
+                settingsArticleSideDropdown.parentNode.style.display = '';
+            } else {
+                settingsArticleSideDropdown.parentNode.style.display = 'none';
+            }
+            if (settingsEnabled) {
+                restart();
+            }
+        });
+        const articleStyleOptions = [
             { name: 'Left', value: 'left' },
             { name: 'Right', value: 'right' },
             { name: 'Both', value: 'both' }
         ];
-        settingsArticleSideDropdown = kmoAddDropDown(settingHeader, 'Article Side', styleOptions, settingArticleSide, 'Changes which side of articles are highlighted.');
+        settingsArticleSideDropdown = kmoAddDropDown(settingHeader, 'Article Side', articleStyleOptions, settingArticleSide, 'Changes which side of articles are highlighted.');
+        if (settingStyle !== 'border') {
+            settingsArticleSideDropdown.parentNode.style.display = 'none';
+        }
         settingsArticleSideDropdown.addEventListener("change", () => {
             const newStyle = kmoGetDropDown(settingsArticleSideDropdown);
             settingArticleSide = newStyle;
@@ -249,6 +304,7 @@
                 restart();
             }
         });
+        return settingHeader;
     }
 
     // Global and persistent variables.
@@ -258,13 +314,16 @@
     let settingsMod = GM_getValue(settingPrefix + 'mod', '#ff0000');
     let settingsHome = GM_getValue(settingPrefix + 'home', '#00FF64');
     let settingArticleSide = GM_getValue(settingPrefix + 'articleSide', 'right');
+    let settingStyle = GM_getValue(settingPrefix + 'style', 'bubble');
     let settingsEnabledToggle;
     let settingsArticleSideDropdown;
+    let settingsDisplayDropdown;
     let settingsPickerFed;
     let settingsPickerMod;
     let settingsPickerHome;
     let injectedCss;
     let observer;
+    let settingsPanel;
 
     // Wait for the page to finish loading before doing the real work.
     window.addEventListener("load", function () {
@@ -274,6 +333,6 @@
         }
 
         // Inject settings panel.
-        createSettings();
+        settingsPanel = createSettings();
     });
 })();
